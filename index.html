@@ -623,6 +623,20 @@
                 return { name: cat.name, correct: cCorrect, wrong: cWrong, total: cTotal, pct: cPct };
             }).filter(c => c.total > 0);
 
+            // Calculate Detailed Stats per Subcategory (Konu)
+            const subStats = subcategories.map(sub => {
+                const subTests = tests.filter(t => t.subId === sub.id);
+                const subTestIds = subTests.map(t => t.id);
+                const subResults = results.filter(r => subTestIds.includes(r.testId));
+                
+                const sCorrect = subResults.reduce((acc, r) => acc + r.score, 0);
+                const sTotal = subResults.reduce((acc, r) => acc + r.totalQuestions, 0);
+                const sWrong = sTotal - sCorrect;
+                const sPct = sTotal > 0 ? Math.round((sCorrect/sTotal)*100) : 0;
+                
+                return { name: sub.name, correct: sCorrect, wrong: sWrong, total: sTotal, pct: sPct };
+            }).filter(s => s.total > 0).sort((a,b) => b.total - a.total); // Sort by activity volume
+
             // Get Recent Tests (Newest 5)
             const recentTests = [...tests].sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)).slice(0, 5);
 
@@ -740,7 +754,39 @@
                                      </div>
                                  </div>
 
-                                 <!-- Subject Stats -->
+                                 <!-- NEW: Subcategory Stats (Konu Performansı) -->
+                                 <div class="glass-panel rounded-3xl overflow-hidden border border-[var(--border-color)] bg-[var(--bg-surface)]">
+                                    <div class="p-6 border-b border-[var(--border-color)] flex items-center gap-2 bg-[var(--bg-card)]/50 backdrop-blur-sm">
+                                         <span class="material-symbols-rounded text-[var(--text-muted)]">list_alt</span>
+                                         <h3 class="font-bold text-[var(--text-main)] text-sm uppercase tracking-wide">Konu Performansı</h3>
+                                    </div>
+                                    <div class="p-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        ${subStats.length > 0 ? subStats.map(s => `
+                                            <div class="p-4 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-color)] hover:border-primary/30 transition-colors">
+                                                <div class="flex justify-between mb-2">
+                                                    <span class="font-bold text-sm text-[var(--text-main)] truncate pr-2">${s.name}</span>
+                                                    <span class="text-xs font-mono font-bold ${s.pct >= 70 ? 'text-primary' : (s.pct >= 50 ? 'text-amber-500' : 'text-red-500')}">%${s.pct}</span>
+                                                </div>
+                                                <div class="w-full bg-[var(--bg-surface)] rounded-full h-1.5 mb-2 overflow-hidden border border-[var(--border-color)]/50">
+                                                    <div class="h-full rounded-full transition-all duration-1000 ${s.pct >= 70 ? 'bg-primary' : (s.pct >= 50 ? 'bg-amber-500' : 'bg-red-500')}" style="width: ${s.pct}%"></div>
+                                                </div>
+                                                <div class="flex justify-between text-[10px] text-[var(--text-muted)] font-medium">
+                                                    <span>${s.total} Soru</span>
+                                                    <div class="flex gap-2">
+                                                        <span class="text-emerald-500">${s.correct} D</span>
+                                                        <span class="text-red-500">${s.wrong} Y</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        `).join('') : `
+                                            <div class="col-span-full text-center py-6 text-[var(--text-muted)] text-sm">
+                                                Konu bazlı yeterli veri yok.
+                                            </div>
+                                        `}
+                                    </div>
+                                 </div>
+
+                                 <!-- Subject Stats (Ders Performansı) -->
                                  <div class="glass-panel rounded-3xl overflow-hidden border border-[var(--border-color)] bg-[var(--bg-surface)]">
                                     <div class="p-6 border-b border-[var(--border-color)] flex items-center gap-2 bg-[var(--bg-card)]/50 backdrop-blur-sm">
                                          <span class="material-symbols-rounded text-[var(--text-muted)]">donut_large</span>
