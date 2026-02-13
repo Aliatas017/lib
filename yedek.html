@@ -1,0 +1,1387 @@
+<!DOCTYPE html>
+<html lang="tr" class="dark">
+<head>
+    <meta charset="utf-8"/>
+    <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+    <title>Sınavı Yönet - EduManage</title>
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com" rel="preconnect"/>
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+    <!-- Material Symbols -->
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#10b981", // Emerald 500
+                        "primary-hover": "#059669", // Emerald 600
+                        
+                        // Dark Mode Colors
+                        "bg-dark": "#09090b", // Zinc 950
+                        "surface-dark": "#18181b", // Zinc 900
+                        "card-dark": "#27272a", // Zinc 800
+                        "border-dark": "#3f3f46", // Zinc 700
+                        
+                        // Light Mode Colors
+                        "bg-light": "#f3f4f6", // Gray 100
+                        "surface-light": "#ffffff", // White
+                        "card-light": "#ffffff", // White
+                        "border-light": "#e5e7eb", // Gray 200
+                        "text-light": "#1f2937", // Gray 800
+                    },
+                    fontFamily: { "display": ["Manrope", "sans-serif"], "body": ["Manrope", "sans-serif"], "mono": ["JetBrains Mono", "monospace"] },
+                    animation: {
+                        'fade-in': 'fadeIn 0.4s ease-out',
+                        'slide-up': 'slideUp 0.3s cubic-bezier(0.2, 0.8, 0.2, 1)',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(15px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        }
+                    }
+                },
+            },
+        }
+    </script>
+    <style>
+        body { font-family: 'Manrope', sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        /* Tema Bazlı Değişkenler */
+        :root {
+            --bg-body: #f3f4f6;
+            --bg-surface: #ffffff;
+            --bg-card: #ffffff;
+            --border-color: #e5e7eb;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+        }
+        .dark:root {
+            --bg-body: #09090b;
+            --bg-surface: #18181b;
+            --bg-card: #27272a;
+            --border-color: #3f3f46;
+            --text-main: #f5f5f5;
+            --text-muted: #a1a1aa;
+        }
+
+        body { background-color: var(--bg-body); color: var(--text-main); transition: background-color 0.3s, color 0.3s; }
+        
+        .glass-panel {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+        .dark .glass-panel { box-shadow: 0 4px 20px rgba(0,0,0,0.4); }
+
+        .glass-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            transition: all 0.2s ease;
+        }
+        .glass-card:hover {
+            border-color: #10b981;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.1);
+        }
+
+        .input-immersive {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            transition: all 0.2s ease;
+            font-family: 'Manrope', sans-serif;
+        }
+        .input-immersive:focus {
+            border-color: #10b981;
+            outline: none;
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.1);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
+        ::-webkit-scrollbar-thumb:hover { background: #71717a; }
+        
+        /* Quiz Specifics (Preserved) */
+        .option-card { 
+            transition: all 0.15s ease; 
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            outline: none;
+        }
+        .option-card:hover:not(:disabled) { 
+            background: var(--bg-surface); 
+            border-color: #71717a;
+            transform: translateX(4px);
+        }
+        .option-card.selected-correct { border-color: #10b981; background: rgba(16, 185, 129, 0.08); color: #10b981; }
+        .option-card.selected-wrong { border-color: #ef4444; background: rgba(239, 68, 68, 0.08); color: #ef4444; }
+        .option-card.disabled { opacity: 0.5; cursor: default; transform: none !important; }
+        
+        button { outline: none !important; } 
+    </style>
+</head>
+<body class="min-h-screen flex overflow-hidden selection:bg-primary selection:text-white">
+
+    <!-- LOGIN SCREEN -->
+    <div id="login-screen" class="fixed inset-0 z-50 bg-bg-dark flex items-center justify-center p-4 overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-emerald-900 to-black"></div>
+        <div class="absolute bottom-0 right-0 w-96 h-96 bg-primary/5 rounded-full blur-[100px] pointer-events-none"></div>
+        
+        <div class="w-full max-w-sm bg-surface-dark p-8 rounded-2xl border border-border-dark text-center animate-fade-in relative z-10 shadow-2xl shadow-black">
+            <div class="w-16 h-16 mx-auto mb-6 bg-card-dark rounded-xl flex items-center justify-center border border-border-dark text-primary shadow-[0_0_20px_rgba(16,185,129,0.1)]">
+                <span class="material-symbols-rounded text-4xl">school</span>
+            </div>
+            
+            <h1 class="text-2xl font-bold text-white mb-2 tracking-tight">EduManage</h1>
+            <p class="text-gray-400 text-xs mb-8 uppercase tracking-widest font-semibold">Öğrenme Platformu</p>
+            
+            <div id="config-error" class="hidden mb-4 bg-red-500/5 border border-red-500/20 p-3 rounded-lg text-left">
+                <p class="text-red-400 text-xs font-bold flex items-center gap-2"><span class="material-symbols-rounded text-sm">error</span> Yapılandırma Hatası</p>
+            </div>
+
+            <form onsubmit="handleAuth(event)" class="space-y-3 text-left">
+                <div class="group">
+                    <label class="text-[10px] font-bold text-gray-400 ml-1 mb-1 block uppercase tracking-wider">E-Posta</label>
+                    <input type="email" name="email" required placeholder="ornek@email.com" class="w-full input-immersive rounded-lg p-3 text-sm placeholder:text-gray-600 bg-[#27272a] text-white border-[#3f3f46]">
+                </div>
+                <div class="group">
+                    <label class="text-[10px] font-bold text-gray-400 ml-1 mb-1 block uppercase tracking-wider">Şifre</label>
+                    <input type="password" name="password" required placeholder="••••••••" class="w-full input-immersive rounded-lg p-3 text-sm placeholder:text-gray-600 bg-[#27272a] text-white border-[#3f3f46]">
+                </div>
+                <button type="submit" id="auth-submit-btn" class="w-full bg-primary hover:bg-primary-hover text-white py-3 rounded-lg font-bold text-sm transition-all flex items-center justify-center gap-2 mt-4 shadow-lg shadow-primary/20 hover:scale-[1.01] active:scale-[0.99]">
+                    <span>Giriş Yap</span>
+                </button>
+            </form>
+
+            <div class="mt-6 pt-6 border-t border-border-dark">
+                <button onclick="toggleAuthMode()" class="text-gray-400 hover:text-white text-xs font-medium transition-colors w-full text-center flex items-center justify-center gap-1 group" id="auth-toggle-btn">
+                    Hesabın yok mu? <span class="text-primary group-hover:underline font-bold">Kayıt Ol</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- APP CONTAINER -->
+    <div id="app-wrapper" class="flex w-full h-full hidden animate-fade-in relative transition-colors duration-300">
+        
+        <!-- Unified Sidebar -->
+        <aside id="main-sidebar" class="w-72 bg-[var(--bg-surface)] border-r border-[var(--border-color)] flex flex-col fixed lg:relative inset-y-0 left-0 transform -translate-x-full lg:translate-x-0 transition-transform duration-300 z-40 shadow-2xl lg:shadow-none">
+            <div class="h-16 flex items-center justify-between px-5 relative z-10 border-b border-[var(--border-color)]">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                        <span class="material-symbols-rounded text-xl">school</span>
+                    </div>
+                    <span class="text-base font-bold text-[var(--text-main)] tracking-tight">EduManage</span>
+                </div>
+                <button onclick="toggleSidebar()" class="lg:hidden text-[var(--text-muted)]"><span class="material-symbols-rounded">close</span></button>
+            </div>
+            
+            <div class="flex-1 overflow-y-auto py-6 px-4 flex flex-col gap-1">
+                <!-- User Info -->
+                <div class="mb-6 p-4 bg-[var(--bg-card)] rounded-xl border border-[var(--border-color)] flex items-center gap-3 shadow-sm">
+                    <div class="w-9 h-9 rounded-lg bg-gradient-to-br from-primary to-emerald-700 flex items-center justify-center text-white font-bold text-sm shrink-0 shadow-inner">
+                        <span id="user-avatar-initial">U</span>
+                    </div>
+                    <div class="overflow-hidden">
+                        <p class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-wider">Kullanıcı</p>
+                        <p class="text-xs font-bold text-[var(--text-main)] leading-tight truncate" id="user-email-display">...</p>
+                    </div>
+                </div>
+
+                <p class="px-2 text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest mb-1 mt-2">Menü</p>
+                
+                <button onclick="router('dashboard')" id="nav-dashboard" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[var(--text-muted)] hover:bg-[var(--bg-card)] hover:text-[var(--text-main)] transition-all w-full text-left group">
+                    <span class="material-symbols-rounded text-[20px]">dashboard</span>
+                    <span class="text-sm font-semibold">Genel Bakış</span>
+                </button>
+                <button onclick="router('content')" id="nav-content" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[var(--text-muted)] hover:bg-[var(--bg-card)] hover:text-[var(--text-main)] transition-all w-full text-left group">
+                    <span class="material-symbols-rounded text-[20px]">library_books</span>
+                    <span class="text-sm font-semibold">Test Kütüphanesi</span>
+                </button>
+
+                <!-- Dynamic Filter Section (Only visible in Content View) -->
+                <div id="sidebar-filters" class="hidden mt-6 pt-4 border-t border-[var(--border-color)] animate-fade-in">
+                    <div class="flex justify-between items-center px-2 mb-3">
+                        <p class="text-[10px] font-bold text-[var(--text-muted)] uppercase tracking-widest">Ders Filtrele</p>
+                        <button onclick="openModal('category')" class="text-primary hover:text-primary-hover text-[10px] font-bold p-1 bg-primary/10 rounded">+ Ekle</button>
+                    </div>
+                    <div id="dynamic-filter-list" class="space-y-1">
+                        <!-- Filters Injected via JS -->
+                    </div>
+                </div>
+
+                <div class="mt-auto pt-4 border-t border-[var(--border-color)] space-y-2">
+                    <button onclick="toggleTheme()" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[var(--text-muted)] hover:bg-[var(--bg-card)] hover:text-[var(--text-main)] transition-all w-full text-left">
+                         <span class="material-symbols-rounded text-[20px]" id="theme-icon">dark_mode</span>
+                         <span class="text-sm font-semibold" id="theme-text">Koyu Mod</span>
+                    </button>
+                    <button onclick="handleLogout()" class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-[var(--text-muted)] hover:bg-red-500/10 hover:text-red-500 transition-all w-full text-left group">
+                        <span class="material-symbols-rounded text-[20px]">logout</span>
+                        <span class="text-sm font-semibold">Çıkış Yap</span>
+                    </button>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Overlay for Sidebar (Mobile) -->
+        <div id="sidebar-overlay" onclick="toggleSidebar()" class="fixed inset-0 bg-black/50 z-30 lg:hidden hidden backdrop-blur-sm"></div>
+
+        <!-- Main Content -->
+        <main class="flex-1 flex flex-col h-screen overflow-hidden relative z-10 bg-[var(--bg-body)]">
+            <!-- Mobile Header -->
+            <div class="lg:hidden h-16 bg-[var(--bg-surface)] border-b border-[var(--border-color)] flex items-center justify-between px-5 shrink-0 z-20">
+                <button onclick="toggleSidebar()" class="p-2 -ml-2 text-[var(--text-main)]"><span class="material-symbols-rounded">menu</span></button>
+                <div class="flex items-center gap-2">
+                    <span class="material-symbols-rounded text-primary text-xl">school</span>
+                    <span class="font-bold text-[var(--text-main)] text-lg">EduManage</span>
+                </div>
+                <div class="w-8"></div> <!-- Spacer -->
+            </div>
+
+            <!-- Dynamic Content Area -->
+            <div id="app-container" class="flex-1 overflow-hidden relative w-full h-full">
+                <!-- Loader -->
+                <div class="flex justify-center items-center h-full">
+                    <div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal Overlay -->
+    <div id="modal-overlay" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden z-[60] flex items-center justify-center p-4">
+        <div class="bg-[var(--bg-surface)] rounded-2xl w-full max-w-xl shadow-2xl transform scale-95 opacity-0 transition-all duration-200 flex flex-col max-h-[90vh] border border-[var(--border-color)]" id="modal-content">
+            <div class="p-5 border-b border-[var(--border-color)] flex justify-between items-center shrink-0">
+                <h3 id="modal-title" class="text-base font-bold text-[var(--text-main)]">Başlık</h3>
+                <button onclick="closeModal()" class="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors p-1.5 rounded-lg hover:bg-[var(--bg-card)]">
+                    <span class="material-symbols-rounded text-xl">close</span>
+                </button>
+            </div>
+            <div id="modal-body" class="p-5 overflow-y-auto thin-scroll">
+                <!-- Dynamic Form -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="fixed bottom-8 right-8 bg-[var(--bg-surface)] border border-[var(--border-color)] text-[var(--text-main)] px-5 py-3 rounded-lg shadow-2xl transform translate-y-32 opacity-0 transition-all duration-300 z-[80] flex items-center gap-3 text-xs font-bold shadow-black/20">
+        <span class="material-symbols-rounded filled text-lg text-primary">check_circle</span>
+        <span id="toast-message">Başarılı</span>
+    </div>
+
+    <!-- Firebase Logic -->
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, addDoc, onSnapshot, doc, deleteDoc, updateDoc, query } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        // --- Config ---
+        const envConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {};
+        const myFirebaseConfig = {
+             apiKey: "AIzaSyBRyvBSrNc5QKFWiMryYbHG-s4DXf4IIrc",
+             authDomain: "kpss-takip-75477.firebaseapp.com",
+             projectId: "kpss-takip-75477",
+             storageBucket: "kpss-takip-75477.firebasestorage.app",
+             messagingSenderId: "1083935832054",
+             appId: "1:1083935832054:web:d02f57e3721e39f286b9d7",
+             measurementId: "G-QFLEBQEHBC"
+        };
+        const firebaseConfig = (envConfig.apiKey) ? envConfig : myFirebaseConfig;
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        
+        let app, auth, db;
+        try {
+            if (!firebaseConfig.apiKey) {
+                document.getElementById('config-error').classList.remove('hidden');
+                document.getElementById('auth-submit-btn').disabled = true;
+            } else {
+                app = initializeApp(firebaseConfig);
+                auth = getAuth(app);
+                db = getFirestore(app);
+            }
+        } catch(e) { console.error(e); }
+
+        // --- State ---
+        let currentUser = null;
+        let categories = [], subcategories = [], tests = [], questions = [], results = [];
+        let loading = true;
+        let currentView = 'dashboard'; 
+        let contentFilter = { catId: 'all', subId: 'all', search: '' };
+        let activeQuizData = null; 
+        let isLoginMode = true;
+        let currentEditingId = null;
+        let visibleTestCount = 12; // "Load More" initial count
+
+        // --- Theme & Sidebar Logic ---
+        window.toggleSidebar = () => {
+            const sidebar = document.getElementById('main-sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            if (sidebar.classList.contains('-translate-x-full')) {
+                sidebar.classList.remove('-translate-x-full');
+                overlay.classList.remove('hidden');
+            } else {
+                sidebar.classList.add('-translate-x-full');
+                overlay.classList.add('hidden');
+            }
+        };
+
+        window.toggleTheme = () => {
+            const html = document.documentElement;
+            const isDark = html.classList.contains('dark');
+            const icon = document.getElementById('theme-icon');
+            const text = document.getElementById('theme-text');
+            
+            if (isDark) {
+                html.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+                if(icon) icon.innerText = 'light_mode';
+                if(text) text.innerText = 'Açık Mod';
+            } else {
+                html.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+                if(icon) icon.innerText = 'dark_mode';
+                if(text) text.innerText = 'Koyu Mod';
+            }
+        };
+
+        // Initialize Theme
+        const storedTheme = localStorage.getItem('theme');
+        if (storedTheme === 'light') {
+            document.documentElement.classList.remove('dark');
+            document.getElementById('theme-icon').innerText = 'light_mode';
+            document.getElementById('theme-text').innerText = 'Açık Mod';
+        }
+
+        // --- Auth Functions ---
+        window.toggleAuthMode = () => {
+            isLoginMode = !isLoginMode;
+            const btn = document.getElementById('auth-submit-btn');
+            const toggle = document.getElementById('auth-toggle-btn');
+            if (isLoginMode) {
+                btn.querySelector('span').innerText = "Giriş Yap";
+                toggle.innerHTML = `Hesabın yok mu? <span class="text-primary group-hover:underline font-bold">Kayıt Ol</span>`;
+            } else {
+                btn.querySelector('span').innerText = "Kayıt Ol";
+                toggle.innerHTML = `Zaten üye misin? <span class="text-primary group-hover:underline font-bold">Giriş Yap</span>`;
+            }
+        };
+
+        window.handleAuth = async (e) => {
+            e.preventDefault();
+            if (!auth) return;
+            const formData = new FormData(e.target);
+            const email = formData.get('email');
+            const password = formData.get('password');
+            const btn = document.getElementById('auth-submit-btn');
+            const originalText = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = `<div class="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>`;
+
+            try {
+                if (isLoginMode) await signInWithEmailAndPassword(auth, email, password);
+                else await createUserWithEmailAndPassword(auth, email, password);
+            } catch (err) {
+                console.error(err);
+                let msg = "İşlem başarısız.";
+                if (err.code.includes('invalid-credential')) msg = "Hatalı e-posta veya şifre.";
+                else if (err.code.includes('email-already-in-use')) msg = "Bu e-posta zaten kullanımda.";
+                showToast(msg, "error");
+                btn.disabled = false;
+                btn.innerHTML = originalText;
+            }
+        };
+
+        window.handleLogout = async () => { if(auth) { await signOut(auth); location.reload(); } };
+
+        // --- Core Functions ---
+        async function init() {
+            if (!auth) return;
+            if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
+                try { await signInWithCustomToken(auth, __initial_auth_token); } catch (e) {}
+            }
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    currentUser = user;
+                    document.getElementById('user-avatar-initial').innerText = user.email.charAt(0).toUpperCase();
+                    document.getElementById('user-email-display').innerText = user.email;
+                    document.getElementById('login-screen').classList.add('hidden');
+                    document.getElementById('app-wrapper').classList.remove('hidden');
+                    router('dashboard'); 
+                    startListeners();
+                } else {
+                    document.getElementById('login-screen').classList.remove('hidden');
+                    document.getElementById('app-wrapper').classList.add('hidden');
+                }
+            });
+        }
+
+        function startListeners() {
+            if(!currentUser) return;
+            const userPath = `artifacts/${appId}/users/${currentUser.uid}`;
+            const handleSnap = (setter, snap) => { setter(snap.docs.map(d => ({ id: d.id, ...d.data() }))); checkLoading(); };
+            
+            // Modified CheckLoading logic applied to listeners to ensure updates flow through
+            onSnapshot(collection(db, userPath, 'categories'), (s) => handleSnap(d => { categories = d; updateSidebarFilters(); if(currentView === 'content') refreshGrid(); }, s));
+            onSnapshot(collection(db, userPath, 'subcategories'), (s) => handleSnap(d => { subcategories = d; updateSidebarFilters(); if(currentView === 'content') refreshGrid(); }, s));
+            onSnapshot(collection(db, userPath, 'tests'), (s) => handleSnap(d => { tests = d; if(currentView === 'content') refreshGrid(); if(currentView === 'dashboard') render(); }, s)); // render() call for dashboard updates
+            onSnapshot(collection(db, userPath, 'questions'), (s) => handleSnap(d => { questions = d; }, s));
+            onSnapshot(collection(db, userPath, 'results'), (s) => handleSnap(d => { results = d; if(currentView === 'dashboard') render(); }, s)); // render() call for dashboard updates
+        }
+
+        function checkLoading() { 
+            // IMPROVED: Even if not initial loading, we might need to re-render dashboard if data (like results) arrived late.
+            if(loading) { 
+                loading = false; 
+                render(); 
+            } else {
+                // If data updates while already loaded, force refresh relevant view
+                if (currentView === 'dashboard') render();
+                // Note: content view is handled by specific callbacks in startListeners (refreshGrid)
+            }
+        }
+
+        window.router = function(view) {
+            currentView = view;
+            // Update Sidebar Navigation State
+            document.querySelectorAll('aside button[id^="nav-"]').forEach(btn => {
+                btn.classList.remove('bg-[var(--bg-card)]', 'text-[var(--text-main)]', 'shadow-sm', 'border', 'border-[var(--border-color)]');
+                btn.classList.add('text-[var(--text-muted)]');
+            });
+            const activeBtn = document.getElementById(`nav-${view}`);
+            if(activeBtn) {
+                activeBtn.classList.remove('text-[var(--text-muted)]');
+                activeBtn.classList.add('bg-[var(--bg-card)]', 'text-[var(--text-main)]', 'shadow-sm', 'border', 'border-[var(--border-color)]'); 
+            }
+
+            // Update Sidebar Content Visibility
+            const filterSection = document.getElementById('sidebar-filters');
+            if (view === 'content') {
+                filterSection.classList.remove('hidden');
+                updateSidebarFilters(); // Ensure fresh
+                visibleTestCount = 12; // Reset pagination
+            } else {
+                filterSection.classList.add('hidden');
+                contentFilter = { catId: 'all', subId: 'all', search: '' };
+            }
+
+            // Close sidebar on mobile routing
+            const sidebar = document.getElementById('main-sidebar');
+            if (!sidebar.classList.contains('-translate-x-full') && window.innerWidth < 1024) {
+                 window.toggleSidebar();
+            }
+
+            render();
+        }
+
+        // --- Sidebar Filter Logic (Unified) ---
+        function updateSidebarFilters() {
+            if (currentView !== 'content') return;
+            const container = document.getElementById('dynamic-filter-list');
+            const allTestCount = tests.length;
+            
+            let html = `
+                <button onclick="toggleCategory('all')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-bold transition-all flex items-center justify-between ${contentFilter.catId === 'all' ? 'bg-primary text-white shadow-md' : 'text-[var(--text-muted)] hover:bg-[var(--bg-card)] hover:text-[var(--text-main)]'}">
+                    <span>Tüm Testler</span>
+                    <span class="opacity-70 text-[10px] bg-black/10 px-1.5 py-0.5 rounded">${allTestCount}</span>
+                </button>`;
+            
+            categories.forEach(c => {
+                 const isActive = contentFilter.catId === c.id;
+                 const catSubIds = subcategories.filter(s => s.catId === c.id).map(s => s.id);
+                 const catTestCount = tests.filter(t => catSubIds.includes(t.subId)).length;
+
+                 html += `
+                    <div class="mt-1">
+                        <div class="flex items-center justify-between group rounded-lg transition-colors ${isActive ? 'bg-[var(--bg-card)]' : 'hover:bg-[var(--bg-card)]'}">
+                            <button onclick="toggleCategory('${c.id}')" class="flex-1 text-left px-3 py-2 text-xs font-bold flex items-center justify-between ${isActive ? 'text-primary' : 'text-[var(--text-muted)] group-hover:text-[var(--text-main)]'}">
+                                <span>${c.name}</span>
+                                <span class="bg-[var(--bg-body)] text-[var(--text-muted)] px-1.5 py-0.5 rounded text-[9px] font-mono">${catTestCount}</span>
+                            </button>
+                            <div class="flex items-center pr-2 gap-1 ${isActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'} transition-opacity">
+                                <button onclick="openModal('subcategory', '${c.id}')" class="text-[var(--text-muted)] hover:text-[var(--text-main)] p-1" title="Konu Ekle"><span class="material-symbols-rounded text-xs">add</span></button>
+                                <button onclick="deleteItem('categories', '${c.id}')" class="text-[var(--text-muted)] hover:text-red-500 p-1" title="Sil"><span class="material-symbols-rounded text-xs">delete</span></button>
+                            </div>
+                        </div>
+                        ${isActive ? `
+                            <div class="pl-3 space-y-0.5 mt-0.5 ml-2 border-l border-[var(--border-color)]">
+                                ${subcategories.filter(s => s.catId === c.id).map(s => {
+                                    const subTestCount = tests.filter(t => t.subId === s.id).length;
+                                    return `
+                                    <div class="flex items-center justify-between group py-1.5 pr-2 pl-3 rounded hover:bg-[var(--bg-card)]">
+                                        <button onclick="filterBySubCategory('${s.id}')" class="flex-1 text-left text-[11px] font-semibold transition-colors flex items-center justify-between ${contentFilter.subId === s.id ? 'text-primary' : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'}">
+                                            <span>${s.name}</span>
+                                            <span class="text-[9px] opacity-70">${subTestCount}</span>
+                                        </button>
+                                        <button onclick="deleteItem('subcategories', '${s.id}')" class="opacity-0 group-hover:opacity-100 text-[var(--text-muted)] hover:text-red-500"><span class="material-symbols-rounded text-[10px]">close</span></button>
+                                    </div>
+                                    `;
+                                }).join('')}
+                            </div>
+                        ` : ''}
+                    </div>`;
+            });
+            container.innerHTML = html;
+        }
+
+        window.toggleCategory = (id) => {
+            contentFilter.catId = (contentFilter.catId === id && id !== 'all') ? 'all' : id;
+            contentFilter.subId = 'all';
+            visibleTestCount = 12; // Reset
+            updateSidebarFilters();
+            refreshGrid();
+        };
+
+        window.filterBySubCategory = (id) => { 
+            contentFilter.subId = id; 
+            visibleTestCount = 12; // Reset
+            updateSidebarFilters();
+            refreshGrid();
+        };
+
+        window.handleSearch = (value) => {
+            contentFilter.search = value.toLowerCase();
+            visibleTestCount = 12; // Reset
+            refreshGrid(); // Optimized: Only update grid, don't re-render full page
+        };
+
+        window.loadMoreTests = () => {
+            visibleTestCount += 12;
+            refreshGrid();
+        };
+
+        // --- RENDER LOGIC ---
+        function render() {
+            const container = document.getElementById('app-container');
+            // If we are in content view and just updating, don't destroy DOM
+            if (currentView === 'content' && document.getElementById('content-view-wrapper')) {
+                // Do nothing, let specific updaters handle it if needed
+                // But if this is a full navigation event, we must clear.
+                // Since 'render' is called by router, we assume it's a full navigation or major state change (like loading finish)
+                // For safety, let's clear ONLY if it's NOT a search update. 
+                // But handleSearch doesn't call render() anymore. So this is safe.
+            }
+            
+            container.innerHTML = '';
+
+            if (loading) {
+                 container.innerHTML = `<div class="flex flex-col justify-center items-center h-full animate-fade-in"><div class="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary mb-4"></div></div>`;
+                 return;
+            }
+
+            const isQuiz = currentView === 'quiz_active';
+            const wrapper = document.createElement('div');
+            wrapper.className = isQuiz ? "w-full h-full" : "w-full h-full p-4 md:p-8 overflow-y-auto";
+            container.appendChild(wrapper);
+
+            if (currentView === 'dashboard') renderDashboard(wrapper);
+            else if (currentView === 'content') renderContent(wrapper);
+            else if (currentView === 'quiz_active') renderActiveQuiz(container);
+            else if (currentView === 'quiz_review') renderQuizReview(wrapper);
+        }
+
+        // --- DASHBOARD ---
+        function renderDashboard(container) {
+            const totalLibraryTests = tests.length;
+            const totalTestsSolved = results.length;
+            const totalCorrect = results.reduce((acc, curr) => acc + (curr.score || 0), 0);
+            const totalPossible = results.reduce((acc, curr) => acc + (curr.totalQuestions || 0), 0);
+            
+            const hasActivity = totalPossible > 0;
+            const overallSuccess = hasActivity ? Math.round((totalCorrect / totalPossible) * 100) : 0;
+
+            const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            const today = new Date().toLocaleDateString('tr-TR', dateOptions);
+            const userDisplay = currentUser.email.split('@')[0];
+
+            // Calculate Detailed Stats per Category
+            const catStats = categories.map(cat => {
+                const catSubs = subcategories.filter(s => s.catId === cat.id);
+                const catSubIds = catSubs.map(s => s.id);
+                const catTests = tests.filter(t => catSubIds.includes(t.subId));
+                const catTestIds = catTests.map(t => t.id);
+                const catResults = results.filter(r => catTestIds.includes(r.testId));
+                
+                const cCorrect = catResults.reduce((acc, r) => acc + r.score, 0);
+                const cTotal = catResults.reduce((acc, r) => acc + r.totalQuestions, 0);
+                const cWrong = cTotal - cCorrect;
+                const cPct = cTotal > 0 ? Math.round((cCorrect/cTotal)*100) : 0;
+                
+                return { name: cat.name, correct: cCorrect, wrong: cWrong, total: cTotal, pct: cPct };
+            }).filter(c => c.total > 0);
+
+            // Calculate Detailed Stats per Subcategory (Konu)
+            const subStats = subcategories.map(sub => {
+                const subTests = tests.filter(t => t.subId === sub.id);
+                const subTestIds = subTests.map(t => t.id);
+                const subResults = results.filter(r => subTestIds.includes(r.testId));
+                
+                const sCorrect = subResults.reduce((acc, r) => acc + r.score, 0);
+                const sTotal = subResults.reduce((acc, r) => acc + r.totalQuestions, 0);
+                const sWrong = sTotal - sCorrect;
+                const sPct = sTotal > 0 ? Math.round((sCorrect/sTotal)*100) : 0;
+                
+                return { name: sub.name, correct: sCorrect, wrong: sWrong, total: sTotal, pct: sPct };
+            }).filter(s => s.total > 0).sort((a,b) => b.total - a.total); // Sort by activity volume
+
+            // Get Recent Tests (Newest 5)
+            const recentTests = [...tests].sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)).slice(0, 5);
+
+            container.innerHTML = `
+                <div class="animate-fade-in pb-10 max-w-7xl mx-auto space-y-8">
+                    <!-- Welcome Header -->
+                    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+                        <div>
+                            <p class="text-[var(--text-muted)] text-sm font-medium uppercase tracking-wider mb-1">${today}</p>
+                            <h2 class="text-3xl md:text-4xl font-bold text-[var(--text-main)] font-display">Merhaba, <span class="text-primary capitalize">${userDisplay}</span> 👋</h2>
+                        </div>
+                        <!-- Quick Action -->
+                        <button onclick="openModal('global-test-json')" class="bg-[var(--text-main)] text-[var(--bg-body)] hover:opacity-90 px-6 py-3 rounded-xl font-bold text-sm transition-all flex items-center gap-2 shadow-lg shrink-0">
+                            <span class="material-symbols-rounded text-xl">add_circle</span> Test Oluştur
+                        </button>
+                    </div>
+
+                    <!-- Stats Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <!-- Card 1 -->
+                        <div class="glass-card p-6 relative overflow-hidden group">
+                            <div class="absolute right-0 top-0 w-32 h-32 bg-primary/5 rounded-full blur-2xl transform translate-x-10 -translate-y-10 group-hover:bg-primary/10 transition-colors"></div>
+                            <div class="relative z-10">
+                                <div class="flex items-center gap-3 mb-4 text-[var(--text-muted)]">
+                                    <span class="p-2 bg-[var(--bg-surface)] rounded-lg border border-[var(--border-color)]"><span class="material-symbols-rounded text-xl">library_books</span></span>
+                                    <span class="text-xs font-bold uppercase tracking-wider">Kütüphane</span>
+                                </div>
+                                <div class="flex items-baseline gap-2">
+                                    <p class="text-4xl font-bold text-[var(--text-main)] tracking-tight">${totalLibraryTests}</p>
+                                    <span class="text-sm text-[var(--text-muted)] font-medium">Test</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Card 2 -->
+                        <div class="glass-card p-6 relative overflow-hidden group">
+                             <div class="absolute right-0 top-0 w-32 h-32 bg-blue-500/5 rounded-full blur-2xl transform translate-x-10 -translate-y-10 group-hover:bg-blue-500/10 transition-colors"></div>
+                             <div class="relative z-10">
+                                <div class="flex items-center gap-3 mb-4 text-[var(--text-muted)]">
+                                    <span class="p-2 bg-[var(--bg-surface)] rounded-lg border border-[var(--border-color)]"><span class="material-symbols-rounded text-xl">check_circle</span></span>
+                                    <span class="text-xs font-bold uppercase tracking-wider">Tamamlanan</span>
+                                </div>
+                                <div class="flex items-baseline gap-2">
+                                    <p class="text-4xl font-bold text-[var(--text-main)] tracking-tight">${totalTestsSolved}</p>
+                                    <span class="text-sm text-[var(--text-muted)] font-medium">Test</span>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Card 3 -->
+                        <div class="glass-card p-6 relative overflow-hidden group">
+                             <div class="absolute right-0 top-0 w-32 h-32 bg-amber-500/5 rounded-full blur-2xl transform translate-x-10 -translate-y-10 group-hover:bg-amber-500/10 transition-colors"></div>
+                             <div class="relative z-10">
+                                <div class="flex items-center gap-3 mb-4 text-[var(--text-muted)]">
+                                    <span class="p-2 bg-[var(--bg-surface)] rounded-lg border border-[var(--border-color)]"><span class="material-symbols-rounded text-xl">analytics</span></span>
+                                    <span class="text-xs font-bold uppercase tracking-wider">Genel Başarı</span>
+                                </div>
+                                <div class="flex items-baseline gap-2">
+                                    <p class="text-4xl font-bold ${hasActivity ? (overallSuccess >= 50 ? 'text-primary' : 'text-amber-500') : 'text-[var(--text-muted)]'} tracking-tight">
+                                        ${hasActivity ? '%' + overallSuccess : '-'}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                     ${categories.length === 0 ? `
+                        <div class="bg-[var(--bg-surface)] p-12 rounded-3xl border border-[var(--border-color)] text-center">
+                             <div class="w-16 h-16 bg-[var(--bg-card)] rounded-2xl flex items-center justify-center text-primary text-4xl mb-6 mx-auto border border-[var(--border-color)]"><span class="material-symbols-rounded">school</span></div>
+                             <h2 class="text-xl font-bold text-[var(--text-main)] mb-2">Hoş Geldiniz!</h2>
+                             <p class="text-[var(--text-muted)] text-sm mb-6">Öğrenme yolculuğuna başlamak için ilk testini oluştur.</p>
+                             <button onclick="openModal('global-test-json')" class="bg-primary hover:bg-primary-hover text-white px-6 py-3 rounded-xl font-bold text-sm transition-transform hover:scale-105 shadow-lg shadow-primary/30">İlk Testi Oluştur</button>
+                        </div>
+                     ` : ''}
+
+                     ${categories.length > 0 ? `
+                         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                             
+                             <!-- Left Column (Activities & Stats) -->
+                             <div class="lg:col-span-2 space-y-8">
+                                 <!-- Recent Activity -->
+                                 <div class="glass-panel rounded-3xl overflow-hidden border border-[var(--border-color)] bg-[var(--bg-surface)]">
+                                     <div class="p-6 border-b border-[var(--border-color)] flex justify-between items-center bg-[var(--bg-card)]/50 backdrop-blur-sm">
+                                         <div class="flex items-center gap-2">
+                                             <span class="material-symbols-rounded text-[var(--text-muted)]">history</span>
+                                             <h3 class="font-bold text-[var(--text-main)] text-sm uppercase tracking-wide">Son Aktiviteler</h3>
+                                         </div>
+                                         ${results.length > 0 ? `<button onclick="resetProgress()" class="text-[10px] font-bold text-red-400 hover:text-red-300 transition-colors bg-red-500/5 px-3 py-1.5 rounded-lg border border-red-500/10">Geçmişi Temizle</button>` : ''}
+                                     </div>
+                                     <div class="divide-y divide-[var(--border-color)]">
+                                         ${results.length > 0 ? [...results].sort((a,b) => b.timestamp - a.timestamp).slice(0,5).map(r => {
+                                             const t = tests.find(x => x.id === r.testId);
+                                             const pct = Math.round((r.score/r.totalQuestions)*100);
+                                             const gradeColor = pct >= 70 ? 'text-emerald-500 bg-emerald-500/10 border-emerald-500/20' : 'text-[var(--text-muted)] bg-[var(--bg-card)] border-[var(--border-color)]';
+                                             return `
+                                             <div class="flex items-center justify-between p-4 hover:bg-[var(--bg-card)] transition-all group">
+                                                 <div class="flex items-center gap-4">
+                                                     <div class="w-10 h-10 rounded-xl flex items-center justify-center text-xs font-bold ${gradeColor} shrink-0 border">
+                                                         <span>%${pct}</span>
+                                                     </div>
+                                                     <div>
+                                                         <p class="text-[var(--text-main)] text-sm font-bold truncate max-w-[120px] sm:max-w-xs group-hover:text-primary transition-colors">${t ? t.title : 'Silinmiş Test'}</p>
+                                                         <p class="text-[10px] text-[var(--text-muted)] font-mono uppercase">${new Date(r.timestamp).toLocaleDateString('tr-TR', {month:'short', day:'numeric'})}</p>
+                                                     </div>
+                                                 </div>
+                                                 <div class="flex items-center gap-3">
+                                                     <div class="text-xs font-mono font-bold text-[var(--text-main)]">${r.score}/${r.totalQuestions}</div>
+                                                     ${t ? `<button onclick="startQuiz('${t.id}')" class="text-[10px] font-bold bg-[var(--bg-surface)] hover:bg-[var(--bg-body)] border border-[var(--border-color)] px-2.5 py-1.5 rounded-lg text-[var(--text-main)] transition-colors opacity-0 group-hover:opacity-100">Tekrar Çöz</button>` : ''}
+                                                 </div>
+                                             </div>`;
+                                         }).join('') : `
+                                            <div class="text-center py-10 text-[var(--text-muted)]">
+                                                <p class="text-sm mb-4">Henüz çözülmüş test bulunmuyor.</p>
+                                                <button onclick="router('content')" class="text-primary text-xs font-bold hover:underline">Kütüphaneye Git</button>
+                                            </div>
+                                         `}
+                                     </div>
+                                 </div>
+
+                                 <!-- NEW: Subcategory Stats (Konu Performansı) -->
+                                 <div class="glass-panel rounded-3xl overflow-hidden border border-[var(--border-color)] bg-[var(--bg-surface)]">
+                                    <div class="p-6 border-b border-[var(--border-color)] flex items-center gap-2 bg-[var(--bg-card)]/50 backdrop-blur-sm">
+                                         <span class="material-symbols-rounded text-[var(--text-muted)]">list_alt</span>
+                                         <h3 class="font-bold text-[var(--text-main)] text-sm uppercase tracking-wide">Konu Performansı</h3>
+                                    </div>
+                                    <div class="p-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        ${subStats.length > 0 ? subStats.map(s => `
+                                            <div class="p-4 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-color)] hover:border-primary/30 transition-colors">
+                                                <div class="flex justify-between mb-2">
+                                                    <span class="font-bold text-sm text-[var(--text-main)] truncate pr-2">${s.name}</span>
+                                                    <span class="text-xs font-mono font-bold ${s.pct >= 70 ? 'text-primary' : (s.pct >= 50 ? 'text-amber-500' : 'text-red-500')}">%${s.pct}</span>
+                                                </div>
+                                                <div class="w-full bg-[var(--bg-surface)] rounded-full h-1.5 mb-2 overflow-hidden border border-[var(--border-color)]/50">
+                                                    <div class="h-full rounded-full transition-all duration-1000 ${s.pct >= 70 ? 'bg-primary' : (s.pct >= 50 ? 'bg-amber-500' : 'bg-red-500')}" style="width: ${s.pct}%"></div>
+                                                </div>
+                                                <div class="flex justify-between text-[10px] text-[var(--text-muted)] font-medium">
+                                                    <span>${s.total} Soru</span>
+                                                    <div class="flex gap-2">
+                                                        <span class="text-emerald-500">${s.correct} D</span>
+                                                        <span class="text-red-500">${s.wrong} Y</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        `).join('') : `
+                                            <div class="col-span-full text-center py-6 text-[var(--text-muted)] text-sm">
+                                                Konu bazlı yeterli veri yok.
+                                            </div>
+                                        `}
+                                    </div>
+                                 </div>
+
+                                 <!-- Subject Stats (Ders Performansı) -->
+                                 <div class="glass-panel rounded-3xl overflow-hidden border border-[var(--border-color)] bg-[var(--bg-surface)]">
+                                    <div class="p-6 border-b border-[var(--border-color)] flex items-center gap-2 bg-[var(--bg-card)]/50 backdrop-blur-sm">
+                                         <span class="material-symbols-rounded text-[var(--text-muted)]">donut_large</span>
+                                         <h3 class="font-bold text-[var(--text-main)] text-sm uppercase tracking-wide">Ders Performansı</h3>
+                                    </div>
+                                    <div class="p-6 grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        ${catStats.length > 0 ? catStats.map(c => `
+                                            <div class="p-4 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-color)]">
+                                                <div class="flex justify-between mb-2">
+                                                    <span class="font-bold text-sm text-[var(--text-main)] truncate">${c.name}</span>
+                                                    <span class="text-xs font-mono font-bold ${c.pct >= 70 ? 'text-primary' : (c.pct >= 50 ? 'text-amber-500' : 'text-red-500')}">%${c.pct}</span>
+                                                </div>
+                                                <div class="w-full bg-[var(--bg-surface)] rounded-full h-2 mb-2 overflow-hidden border border-[var(--border-color)]/50">
+                                                    <div class="h-full rounded-full transition-all duration-1000 ${c.pct >= 70 ? 'bg-primary' : (c.pct >= 50 ? 'bg-amber-500' : 'bg-red-500')}" style="width: ${c.pct}%"></div>
+                                                </div>
+                                                <div class="flex justify-between text-[10px] text-[var(--text-muted)] font-medium">
+                                                    <span class="text-emerald-500">${c.correct} Doğru</span>
+                                                    <span class="text-red-500">${c.wrong} Yanlış</span>
+                                                </div>
+                                            </div>
+                                        `).join('') : `
+                                            <div class="col-span-full text-center py-6 text-[var(--text-muted)] text-sm">
+                                                Yeterli veri yok.
+                                            </div>
+                                        `}
+                                    </div>
+                                 </div>
+                             </div>
+
+                             <!-- Right Column (New Tests) -->
+                             <div>
+                                 <div class="glass-panel rounded-3xl overflow-hidden border border-[var(--border-color)] bg-[var(--bg-surface)] h-fit sticky top-6">
+                                     <div class="p-6 border-b border-[var(--border-color)] flex items-center gap-2 bg-[var(--bg-card)]/50 backdrop-blur-sm">
+                                         <span class="material-symbols-rounded text-[var(--text-muted)]">new_releases</span>
+                                         <h3 class="font-bold text-[var(--text-main)] text-sm uppercase tracking-wide">Yeni Eklenenler</h3>
+                                     </div>
+                                     <div class="p-4 space-y-3">
+                                         ${recentTests.length > 0 ? recentTests.map(t => {
+                                             const sub = subcategories.find(s => s.id === t.subId);
+                                             return `
+                                             <div class="flex items-center justify-between p-3 hover:bg-[var(--bg-card)] rounded-xl transition-all border border-transparent hover:border-[var(--border-color)] group">
+                                                 <div class="flex items-center gap-3 overflow-hidden">
+                                                     <div class="w-10 h-10 rounded-lg bg-[var(--bg-surface)] flex items-center justify-center text-[var(--text-muted)] border border-[var(--border-color)] shrink-0">
+                                                         <span class="material-symbols-rounded text-xl">description</span>
+                                                     </div>
+                                                     <div class="overflow-hidden">
+                                                         <p class="text-[var(--text-main)] text-xs font-bold truncate">${t.title}</p>
+                                                         <div class="flex gap-2 items-center mt-0.5">
+                                                             <span class="text-[9px] text-[var(--bg-body)] bg-[var(--text-muted)] px-1.5 rounded font-bold truncate max-w-[80px]">${sub?.name || '-'}</span>
+                                                             <span class="text-[9px] text-[var(--text-muted)] font-mono">${t.questionCount || 0} Soru</span>
+                                                         </div>
+                                                     </div>
+                                                 </div>
+                                                 <button onclick="startQuiz('${t.id}')" class="opacity-0 group-hover:opacity-100 transition-opacity text-[10px] font-bold text-primary bg-primary/10 px-2 py-1 rounded hover:bg-primary hover:text-white">İncele</button>
+                                             </div>`;
+                                         }).join('') : `<div class="text-center py-6 text-[var(--text-muted)] text-sm">Henüz test eklenmemiş.</div>`}
+                                     </div>
+                                 </div>
+                             </div>
+                         </div>
+                     ` : ''}
+                </div>`;
+        }
+
+        // --- CONTENT (TEST LIBRARY) ---
+        function renderContent(container) {
+            // Updated Structure: removed h-full and flex-col constraint to allow natural flow
+            container.innerHTML = `
+                <div id="content-view-wrapper" class="animate-fade-in">
+                    <!-- Top Actions -->
+                    <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+                        <div class="relative w-full max-w-md">
+                            <span class="material-symbols-rounded absolute left-3 top-3 text-[var(--text-muted)] text-lg">search</span>
+                            <input type="text" id="search-input" placeholder="Test ara..." oninput="handleSearch(this.value)" value="${contentFilter.search}" 
+                                class="w-full input-immersive rounded-xl py-2.5 pl-10 pr-4 text-sm focus:bg-[var(--bg-card)]">
+                        </div>
+                        <button onclick="openModal('global-test-json')" class="bg-primary hover:bg-primary-hover text-white px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 shrink-0 shadow-lg shadow-primary/20 w-full sm:w-auto justify-center transition-transform active:scale-95">
+                            <span class="material-symbols-rounded text-lg">add</span> Yeni Test
+                        </button>
+                    </div>
+
+                    <!-- Grid Container (Flows naturally) -->
+                    <div>
+                        <div id="test-grid-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 pb-8">
+                            <!-- Cards injected here -->
+                        </div>
+                        <div id="pagination-container" class="pb-12">
+                            <!-- Load more button injected here -->
+                        </div>
+                    </div>
+                </div>`;
+            
+            refreshGrid();
+        }
+
+        // Helper to update only the grid part (avoids re-rendering search input)
+        function refreshGrid() {
+            const gridEl = document.getElementById('test-grid-container');
+            const paginationEl = document.getElementById('pagination-container');
+            if (!gridEl || !paginationEl) return;
+
+            let filtered = tests;
+            if (contentFilter.catId !== 'all') {
+                const validSubIds = subcategories.filter(s => s.catId === contentFilter.catId).map(s => s.id);
+                filtered = filtered.filter(t => validSubIds.includes(t.subId));
+            }
+            if (contentFilter.subId !== 'all') {
+                filtered = filtered.filter(t => t.subId === contentFilter.subId);
+            }
+            if (contentFilter.search) {
+                const term = contentFilter.search;
+                filtered = filtered.filter(t => {
+                    const sub = subcategories.find(s => s.id === t.subId);
+                    const subName = sub ? sub.name.toLowerCase() : '';
+                    return t.title.toLowerCase().includes(term) || subName.includes(term);
+                });
+            }
+
+            const visibleTests = filtered.slice(0, visibleTestCount);
+            const hasMore = filtered.length > visibleTestCount;
+
+            const cardsHtml = visibleTests.map((t, index) => {
+                const subcat = subcategories.find(s => s.id === t.subId);
+                const cat = subcat ? categories.find(c => c.id === subcat.catId) : null;
+                const result = results.filter(r => r.testId === t.id).sort((a,b) => b.timestamp - a.timestamp)[0];
+                const pct = result ? Math.round((result.score/result.totalQuestions)*100) : 0;
+                
+                return `
+                <div class="glass-card p-4 flex flex-col h-full relative group animate-slide-up" style="animation-delay: ${index * 30}ms">
+                    <!-- Category Badge (Top Highlight) -->
+                    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-[var(--border-color)] via-primary to-[var(--border-color)] opacity-0 group-hover:opacity-100 transition-opacity rounded-t-xl"></div>
+                    
+                    <div class="flex justify-between items-start mb-3">
+                        <span class="text-[10px] font-bold text-[var(--text-muted)] bg-[var(--bg-surface)] border border-[var(--border-color)] px-2 py-1 rounded-md truncate max-w-[60%] uppercase tracking-wider">
+                            ${cat?.name || 'Genel'}
+                        </span>
+                        <div class="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button onclick="openModal('global-test-json', '${t.id}')" class="text-[var(--text-muted)] hover:text-[var(--text-main)] p-1"><span class="material-symbols-rounded text-sm">edit</span></button>
+                            <button onclick="deleteItem('tests', '${t.id}')" class="text-[var(--text-muted)] hover:text-red-500 p-1"><span class="material-symbols-rounded text-sm">delete</span></button>
+                        </div>
+                    </div>
+
+                    <h3 class="text-base font-bold text-[var(--text-main)] leading-tight mb-1 line-clamp-2 h-[2.5rem]" title="${t.title}">${t.title}</h3>
+                    
+                    <div class="mb-3">
+                        <span class="text-[10px] font-bold text-[var(--bg-body)] bg-[var(--text-main)] px-2 py-0.5 rounded uppercase tracking-wide truncate max-w-full inline-block">${subcat?.name || '-'}</span>
+                    </div>
+                    
+                    ${t.description ? `<p class="text-xs text-[var(--text-muted)] mb-4 line-clamp-2 min-h-[2.5em]">${t.description}</p>` : `<div class="mb-4 min-h-[2.5em]"></div>`}
+
+                    ${result ? `
+                        <div class="mb-3 flex items-center gap-2">
+                            <div class="flex-1 h-1.5 bg-[var(--bg-surface)] rounded-full overflow-hidden border border-[var(--border-color)]">
+                                <div class="h-full ${pct >= 70 ? 'bg-primary' : 'bg-amber-500'}" style="width: ${pct}%"></div>
+                            </div>
+                            <span class="text-xs font-bold ${pct >= 70 ? 'text-primary' : 'text-amber-500'}">%${pct}</span>
+                        </div>
+                    ` : '<div class="mb-3 h-4"></div>'}
+                    
+                    <div class="mt-auto pt-3 border-t border-[var(--border-color)] flex items-center justify-between">
+                         <div class="flex items-center gap-1">
+                             <span class="material-symbols-rounded text-sm text-[var(--text-muted)]">list</span>
+                             <span class="text-[10px] text-[var(--text-muted)] font-mono font-bold">${t.questionCount || 0} Soru</span>
+                         </div>
+                        <button onclick="startQuiz('${t.id}')" class="bg-[var(--bg-surface)] hover:bg-[var(--bg-body)] text-[var(--text-main)] border border-[var(--border-color)] px-3 py-1.5 rounded-lg text-xs font-bold transition-all shadow-sm hover:shadow-md flex items-center gap-1">
+                            ${result ? 'Tekrar' : 'Başla'} <span class="material-symbols-rounded text-sm">arrow_forward</span>
+                        </button>
+                    </div>
+                </div>`;
+            }).join('');
+
+            if (visibleTests.length > 0) {
+                gridEl.innerHTML = cardsHtml;
+                paginationEl.innerHTML = hasMore ? `
+                    <div class="flex justify-center mt-4">
+                        <button onclick="loadMoreTests()" class="bg-[var(--bg-card)] hover:bg-[var(--bg-surface)] text-[var(--text-main)] border border-[var(--border-color)] px-6 py-3 rounded-full text-sm font-bold shadow-sm transition-all flex items-center gap-2">
+                            Daha Fazla Yükle <span class="material-symbols-rounded">expand_more</span>
+                        </button>
+                    </div>` : '';
+            } else {
+                gridEl.innerHTML = `
+                    <div class="col-span-full flex flex-col items-center justify-center py-20 text-[var(--text-muted)] border-2 border-dashed border-[var(--border-color)] rounded-2xl bg-[var(--bg-card)]/30">
+                        <span class="material-symbols-rounded text-4xl mb-2 opacity-50">search_off</span>
+                        <p class="font-medium text-sm">Sonuç bulunamadı.</p>
+                    </div>`;
+                paginationEl.innerHTML = '';
+            }
+        }
+
+        // --- QUIZ ACTIVE ---
+        window.startQuiz = (testId) => {
+            const test = tests.find(t => t.id === testId);
+            const qs = questions.filter(q => q.testId === testId);
+            if(qs.length === 0) return showToast("Bu testte soru yok", "error");
+            activeQuizData = { test, questions: qs, answers: {}, currentIndex: 0 };
+            router('quiz_active');
+        }
+
+        window.selectOption = (qId, index) => {
+            if (activeQuizData.answers[qId] !== undefined) return; 
+            activeQuizData.answers[qId] = index;
+            const q = activeQuizData.questions[activeQuizData.currentIndex];
+            
+            // UI Update
+            q.options.forEach((_, i) => {
+                const btn = document.getElementById(`opt-btn-${i}`);
+                if(!btn) return;
+                btn.disabled = true;
+                btn.classList.remove('hover:bg-[var(--bg-surface)]');
+                btn.classList.add('cursor-default');
+
+                if (i === q.correctIndex) {
+                    btn.classList.add('selected-correct');
+                } else if (i === index) {
+                    btn.classList.add('selected-wrong');
+                } else {
+                    btn.classList.add('disabled');
+                }
+            });
+
+            // Navigation Buttons
+            updateQuizNavButtons();
+
+            // Explanation
+            if (q.explanation && q.explanation.trim() !== "") {
+                const expWrapper = document.getElementById('quiz-explanation-wrapper');
+                const expContent = document.getElementById('quiz-explanation-text');
+                if(expWrapper && expContent) {
+                    expContent.innerText = q.explanation;
+                    expWrapper.classList.remove('hidden'); 
+                    setTimeout(() => {
+                          const container = document.querySelector('.quiz-content-area');
+                          if(container) container.scrollTo({ top: container.scrollHeight, behavior: 'smooth' });
+                    }, 100);
+                }
+            }
+        }
+
+        window.quizNav = (direction) => {
+            const newIndex = activeQuizData.currentIndex + direction;
+            if (newIndex >= 0 && newIndex < activeQuizData.questions.length) {
+                activeQuizData.currentIndex = newIndex;
+                const qText = document.getElementById('quiz-question-text');
+                if (qText) {
+                    const q = activeQuizData.questions[newIndex];
+                    const progress = ((newIndex + 1) / activeQuizData.questions.length) * 100;
+                    const ans = activeQuizData.answers[q.id];
+                    const isAnswered = ans !== undefined;
+
+                    document.getElementById('quiz-explanation-wrapper')?.classList.add('hidden');
+
+                    qText.style.opacity = '0';
+                    setTimeout(() => { qText.innerText = q.text; qText.style.opacity = '1'; }, 100);
+
+                    document.getElementById('quiz-counter-current').innerText = newIndex + 1;
+                    document.getElementById('quiz-progress').style.width = `${progress}%`;
+
+                    const optionsContainer = document.getElementById('quiz-options-list');
+                    optionsContainer.innerHTML = q.options.map((opt, i) => {
+                        let baseClass = "w-full text-left p-4 rounded-xl option-card relative overflow-hidden flex items-center gap-4 text-[var(--text-main)] text-base font-medium transition-all duration-200 border border-[var(--border-color)]";
+                        let statusClass = "hover:bg-[var(--bg-surface)]";
+                        let letterClass = "border-[var(--text-muted)] text-[var(--text-muted)]";
+                        
+                        if (isAnswered) {
+                            if (i == q.correctIndex) { statusClass = "selected-correct"; letterClass = "border-primary text-primary"; }
+                            else if (i == ans) { statusClass = "selected-wrong"; letterClass = "border-red-500 text-red-500"; }
+                            else statusClass = "disabled";
+                        }
+
+                        return `
+                        <button id="opt-btn-${i}" onclick="selectOption('${q.id}', ${i})" class="${baseClass} ${statusClass}" ${isAnswered ? 'disabled' : ''}>
+                            <div class="opt-letter w-8 h-8 rounded-lg border-2 ${letterClass} flex items-center justify-center text-sm font-bold transition-colors shrink-0">
+                                ${String.fromCharCode(65+i)}
+                            </div>
+                            <span class="leading-relaxed text-left">${opt}</span>
+                        </button>`;
+                    }).join('');
+
+                    updateQuizNavButtons();
+                } else { render(); }
+            }
+        }
+
+        function updateQuizNavButtons() {
+            const { currentIndex, questions } = activeQuizData;
+            const actionContainer = document.getElementById('quiz-header-actions');
+            const prevBtn = currentIndex > 0 
+                ? `<button onclick="quizNav(-1)" class="bg-[var(--bg-card)] text-[var(--text-main)] hover:bg-[var(--bg-surface)] px-4 py-2 rounded-xl text-sm font-bold flex items-center gap-2 border border-[var(--border-color)] shadow-sm"><span class="material-symbols-rounded text-lg">arrow_back</span> <span class="hidden md:inline">Önceki</span></button>` 
+                : ``;
+
+            const isLast = currentIndex === questions.length - 1;
+            if (isLast) {
+                actionContainer.innerHTML = `${prevBtn}<button onclick="submitQuiz()" class="bg-emerald-500 hover:bg-emerald-600 text-white px-5 py-2 rounded-xl text-sm font-bold flex items-center gap-2 animate-fade-in shadow-lg shadow-emerald-500/20">Bitir <span class="material-symbols-rounded text-lg">check</span></button>`;
+            } else {
+                actionContainer.innerHTML = `${prevBtn}<button onclick="quizNav(1)" class="bg-[var(--bg-surface)] text-[var(--text-main)] hover:bg-[var(--bg-card)] px-5 py-2 rounded-xl text-sm font-bold flex items-center gap-2 animate-fade-in shadow-lg border border-[var(--border-color)]">Sonraki <span class="material-symbols-rounded text-lg">arrow_forward</span></button>`;
+            }
+        }
+
+        window.submitQuiz = async () => {
+            if(!confirm("Testi bitirmek istiyor musun?")) return;
+            let correct = 0;
+            activeQuizData.questions.forEach(q => { if(activeQuizData.answers[q.id] == q.correctIndex) correct++; });
+            try {
+                await addDoc(collection(db, `artifacts/${appId}/users/${currentUser.uid}/results`), { 
+                    testId: activeQuizData.test.id, score: correct, totalQuestions: activeQuizData.questions.length, timestamp: Date.now() 
+                });
+                router('quiz_review');
+            } catch(e) { console.error(e); }
+        }
+
+        function renderActiveQuiz(container) {
+            // STRICTLY PRESERVED STRUCTURE with Theme Variables
+            const { test, questions, currentIndex, answers } = activeQuizData;
+            const q = questions[currentIndex];
+            const ans = answers[q.id];
+            const isAnswered = ans !== undefined;
+            const progress = ((currentIndex + 1) / questions.length) * 100;
+
+            container.innerHTML = `
+                <div class="fixed inset-0 bg-[var(--bg-body)] z-[60] flex flex-col animate-fade-in overflow-hidden">
+                    <!-- Progress Bar -->
+                    <div class="h-1 bg-[var(--bg-surface)] w-full relative z-30">
+                        <div id="quiz-progress" class="h-full bg-primary transition-all duration-300 ease-out shadow-[0_0_10px_rgba(16,185,129,0.5)]" style="width: ${progress}%"></div>
+                    </div>
+
+                    <!-- Header -->
+                    <div class="h-16 px-4 md:px-6 flex items-center justify-between shrink-0 relative z-20 bg-[var(--bg-surface)]/95 backdrop-blur-md border-b border-[var(--border-color)]">
+                        <div class="flex items-center justify-start shrink-0 relative z-10">
+                            <button onclick="router('content')" class="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors flex items-center justify-center w-10 h-10 rounded-xl bg-[var(--bg-card)] border border-[var(--border-color)] hover:bg-[var(--bg-surface)] shrink-0">
+                                <span class="material-symbols-rounded text-xl">arrow_back</span>
+                            </button>
+                        </div>
+                        <div class="absolute inset-0 hidden md:flex items-center justify-center pointer-events-none px-20 md:px-32">
+                            <h2 class="text-base md:text-lg font-bold text-[var(--text-main)] truncate text-center w-full pointer-events-auto">${test.title}</h2>
+                        </div>
+                        <div class="flex items-center justify-end gap-3 shrink-0 relative z-10">
+                            <div class="hidden sm:block text-xs font-mono text-[var(--text-muted)] bg-[var(--bg-card)] px-3 py-1.5 rounded-lg border border-[var(--border-color)]"><span id="quiz-counter-current" class="text-[var(--text-main)] font-bold">${currentIndex + 1}</span> <span class="opacity-50 mx-0.5">/</span> ${questions.length}</div>
+                            <div id="quiz-header-actions" class="flex gap-2">
+                                <!-- Buttons Injected by JS -->
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Main Body -->
+                    <div class="flex-1 w-full h-full overflow-hidden relative z-10 flex flex-col items-center">
+                        <div class="w-full max-w-4xl h-full flex flex-col p-4 md:p-6 quiz-content-area overflow-y-auto thin-scroll">
+                            <div class="flex-none mb-4 text-left">
+                                <h2 id="quiz-question-text" class="text-lg md:text-xl font-medium text-[var(--text-main)] leading-relaxed tracking-normal transition-opacity duration-200 whitespace-pre-wrap">${q.text}</h2>
+                            </div>
+                            <div class="flex-none w-full">
+                                <div id="quiz-options-list" class="flex flex-col space-y-3">
+                                    <!-- Options Injected by JS -->
+                                </div>
+                            </div>
+                            <!-- Explanation Area -->
+                            <div id="quiz-explanation-wrapper" class="hidden mt-6 animate-fade-in flex-none">
+                                <div class="bg-[var(--bg-card)] p-6 rounded-2xl border-l-4 border-primary relative shadow-lg">
+                                    <div class="flex items-center gap-2 text-primary text-xs font-bold uppercase tracking-widest mb-2">
+                                        <span class="material-symbols-rounded text-lg">lightbulb</span> AÇIKLAMA
+                                    </div>
+                                    <p id="quiz-explanation-text" class="text-[var(--text-muted)] text-base leading-relaxed"></p>
+                                </div>
+                            </div>
+                            <div class="h-8 flex-none"></div> 
+                        </div>
+                    </div>
+                </div>`;
+            updateQuizNavButtons(); // Init buttons
+            
+            // Re-render options to ensure correct state on load
+            // (Using the logic from quizNav but just for the current state)
+            const optionsContainer = document.getElementById('quiz-options-list');
+            optionsContainer.innerHTML = q.options.map((opt, i) => {
+                let baseClass = "w-full text-left p-4 rounded-xl option-card relative overflow-hidden flex items-center gap-4 text-[var(--text-main)] text-base font-medium transition-all duration-200 border border-[var(--border-color)]";
+                let statusClass = "hover:bg-[var(--bg-surface)]";
+                let letterClass = "border-[var(--text-muted)] text-[var(--text-muted)]";
+                
+                if (isAnswered) {
+                    if (i == q.correctIndex) { statusClass = "selected-correct"; letterClass = "border-primary text-primary"; }
+                    else if (i == ans) { statusClass = "selected-wrong"; letterClass = "border-red-500 text-red-500"; }
+                    else statusClass = "disabled";
+                }
+
+                return `
+                <button id="opt-btn-${i}" onclick="selectOption('${q.id}', ${i})" class="${baseClass} ${statusClass}" ${isAnswered ? 'disabled' : ''}>
+                    <div class="opt-letter w-8 h-8 rounded-lg border-2 ${letterClass} flex items-center justify-center text-sm font-bold transition-colors shrink-0">
+                        ${String.fromCharCode(65+i)}
+                    </div>
+                    <span class="leading-relaxed text-left">${opt}</span>
+                </button>`;
+            }).join('');
+        }
+
+        function renderQuizReview(container) {
+            const { test, questions, answers } = activeQuizData;
+            let correctCount = 0;
+            const reviewHtml = questions.map((q, idx) => {
+                const userAns = answers[q.id];
+                const isCorrect = userAns == q.correctIndex;
+                if(isCorrect) correctCount++;
+                const isSkipped = userAns === undefined;
+                let borderColor = isSkipped ? 'border-[var(--border-color)]' : (isCorrect ? 'border-emerald-500/50' : 'border-red-500/50');
+                
+                return `
+                <div class="glass-card border ${borderColor} p-5 mb-4 bg-[var(--bg-card)]">
+                    <div class="flex gap-3 mb-3">
+                        <span class="text-[var(--text-muted)] font-bold text-xs bg-[var(--bg-surface)] px-2 py-1 h-fit rounded border border-[var(--border-color)] font-mono">#${idx+1}</span>
+                        <p class="text-sm md:text-base text-[var(--text-main)] font-medium flex-1 leading-relaxed">${q.text}</p>
+                    </div>
+                    <div class="flex flex-col space-y-2 pl-0 md:pl-10">
+                        ${q.options.map((opt, i) => {
+                            let style = "text-[var(--text-muted)]";
+                            let icon = "";
+                            if (i === q.correctIndex) { style = "text-emerald-500 font-bold"; icon = "check"; }
+                            else if (userAns == i && !isCorrect) { style = "text-red-500 font-medium line-through"; }
+                            return `<div class="text-xs md:text-sm ${style} flex items-center gap-2 bg-[var(--bg-surface)] p-2.5 rounded-lg border border-transparent ${i===q.correctIndex ? 'bg-emerald-500/5 border-emerald-500/10' : ''}">${icon ? `<span class="material-symbols-rounded text-base">${icon}</span>` : '<span class="w-5 h-5 flex items-center justify-center border border-[var(--text-muted)]/30 rounded-full text-[10px]">' + String.fromCharCode(65+i) + '</span>'} ${opt}</div>`;
+                        }).join('')}
+                    </div>
+                </div>`;
+            }).join('');
+
+            container.innerHTML = `
+                <div class="animate-fade-in max-w-4xl mx-auto pb-10">
+                    <div class="flex flex-col items-center justify-center py-10 text-center glass-panel rounded-3xl mb-8 relative overflow-hidden border border-[var(--border-color)] bg-[var(--bg-surface)]">
+                        <div class="w-24 h-24 rounded-full border-[6px] border-[var(--bg-body)] flex items-center justify-center text-2xl font-bold text-white mb-4 relative z-10 shadow-xl" 
+                             style="background: conic-gradient(${correctCount/questions.length > 0.5 ? '#10b981' : '#ef4444'} ${Math.round((correctCount/questions.length)*100)}%, #27272a 0);">
+                            %${Math.round((correctCount/questions.length)*100)}
+                        </div>
+                        <h2 class="text-xl font-bold text-[var(--text-main)] mb-1">${test.title}</h2>
+                        
+                        <div class="flex gap-8 text-center mt-6">
+                            <div><p class="text-2xl font-bold text-[var(--text-main)]">${correctCount}</p><p class="text-[10px] text-emerald-500 uppercase font-bold tracking-wider">Doğru</p></div>
+                            <div><p class="text-2xl font-bold text-[var(--text-main)]">${questions.length - correctCount}</p><p class="text-[10px] text-red-500 uppercase font-bold tracking-wider">Yanlış</p></div>
+                            <div><p class="text-2xl font-bold text-[var(--text-main)]">${questions.length}</p><p class="text-[10px] text-[var(--text-muted)] uppercase font-bold tracking-wider">Toplam</p></div>
+                        </div>
+
+                        <button onclick="router('content')" class="mt-8 bg-[var(--text-main)] text-[var(--bg-body)] hover:opacity-90 px-6 py-3 rounded-xl font-bold text-sm transition-all flex items-center gap-2 shadow-lg">
+                            <span class="material-symbols-rounded text-xl">arrow_back</span> Listeye Dön
+                        </button>
+                    </div>
+                    <div>
+                         ${reviewHtml}
+                    </div>
+                </div>`;
+        }
+
+        // --- Data Handling ---
+        window.openModal = (type, id = null, subId = null) => {
+            const overlay = document.getElementById('modal-overlay');
+            const content = document.getElementById('modal-content');
+            const title = document.getElementById('modal-title');
+            const body = document.getElementById('modal-body');
+            overlay.classList.remove('hidden');
+            setTimeout(() => { content.classList.remove('scale-95', 'opacity-0'); content.classList.add('scale-100', 'opacity-100'); }, 10);
+            currentEditingId = type === 'subcategory' ? subId : id;
+
+            if (type === 'global-test-json') {
+                title.innerText = id ? 'Testi Düzenle' : 'Yeni Test';
+                let selCat = contentFilter.catId !== 'all' ? contentFilter.catId : '';
+                let selSub = contentFilter.subId !== 'all' ? contentFilter.subId : '';
+                let testData = null;
+                let jsonContent = '[]';
+                
+                if (id) {
+                    testData = tests.find(t => t.id === id);
+                    if (testData) {
+                        const sub = subcategories.find(s => s.id === testData.subId);
+                        if (sub) { selSub = sub.id; selCat = sub.catId; }
+                        const tQs = questions.filter(q => q.testId === id).map(q => ({ text: q.text, options: q.options, correctIndex: q.correctIndex, explanation: q.explanation || "" }));
+                        jsonContent = JSON.stringify(tQs, null, 2);
+                    }
+                }
+                const catOpts = categories.map(c => `<option value="${c.id}" ${c.id === selCat ? 'selected' : ''}>${c.name}</option>`).join('');
+                
+                body.innerHTML = `
+                    <form onsubmit="handleSubmit(event, 'global-test-json')" class="space-y-4">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div><label class="text-[10px] font-bold text-[var(--text-muted)] uppercase block mb-1">Ders</label><select id="modal-cat-select" onchange="filterSubcatsInModal()" class="w-full input-immersive rounded-lg p-2 text-xs"><option value="">Seçiniz</option>${catOpts}</select></div>
+                            <div><label class="text-[10px] font-bold text-[var(--text-muted)] uppercase block mb-1">Konu</label><select name="subId" id="modal-sub-select" required class="w-full input-immersive rounded-lg p-2 text-xs disabled:opacity-50"><option value="">Önce ders seçiniz...</option></select></div>
+                        </div>
+                        <div><label class="text-[10px] font-bold text-[var(--text-muted)] uppercase block mb-1">Test Başlığı</label><input name="title" value="${testData?.title || ''}" required class="w-full input-immersive rounded-lg p-2.5 text-xs font-semibold" placeholder="Örn: Tarih Deneme 1"></div>
+                        <div>
+                            <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase block mb-1">Açıklama (Opsiyonel)</label>
+                            <input name="description" value="${testData?.description || ''}" class="w-full input-immersive rounded-lg p-2.5 text-xs font-medium" placeholder="Test içeriği hakkında kısa bilgi...">
+                        </div>
+                        <div>
+                            <div class="flex justify-between items-center mb-1">
+                                <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase">Sorular (JSON)</label>
+                                <span class="text-[10px] text-primary cursor-pointer hover:underline font-bold" onclick="copyExampleJson()">Örnek Şablon</span>
+                            </div>
+                            <textarea name="questionsJson" rows="8" required class="w-full bg-[var(--bg-card)] border border-[var(--border-color)] rounded-lg p-2 text-[var(--text-main)] font-mono text-[10px] outline-none focus:border-primary transition-colors resize-none">${jsonContent}</textarea>
+                        </div>
+                        <button class="w-full bg-[var(--text-main)] hover:opacity-90 text-[var(--bg-body)] py-2.5 rounded-lg font-bold text-xs shadow-lg transition-transform hover:scale-[1.01]">${id ? 'Güncelle' : 'Oluştur'}</button>
+                    </form>`;
+                setTimeout(() => filterSubcatsInModal(selSub), 100);
+            } else if (type === 'category') {
+                title.innerText = 'Ders Ekle';
+                body.innerHTML = `<form onsubmit="handleSubmit(event, 'category')" class="space-y-4"><div><label class="text-[10px] text-[var(--text-muted)] font-bold uppercase block mb-1">Ders Adı</label><input name="name" required class="w-full input-immersive rounded-lg p-2.5 text-sm"></div><button class="w-full bg-[var(--text-main)] text-[var(--bg-body)] py-2.5 rounded-lg font-bold text-xs">Kaydet</button></form>`;
+            } else if (type === 'subcategory') {
+                title.innerText = 'Konu Ekle';
+                body.innerHTML = `<form onsubmit="handleSubmit(event, 'subcategory')" class="space-y-4"><input type="hidden" name="catId" value="${id}"><div><label class="text-[10px] text-[var(--text-muted)] font-bold uppercase block mb-1">Konu Adı</label><input name="name" required class="w-full input-immersive rounded-lg p-2.5 text-sm"></div><button class="w-full bg-[var(--text-main)] text-[var(--bg-body)] py-2.5 rounded-lg font-bold text-xs">Kaydet</button></form>`;
+            }
+        }
+
+        window.filterSubcatsInModal = (preSelectId = null) => {
+            const catId = document.getElementById('modal-cat-select').value;
+            const subSel = document.getElementById('modal-sub-select');
+            if (!catId) { subSel.innerHTML = '<option value="">Önce ders seçiniz...</option>'; subSel.disabled = true; return; }
+            const subs = subcategories.filter(s => s.catId === catId);
+            subSel.innerHTML = subs.length ? subs.map(s => `<option value="${s.id}" ${s.id === preSelectId ? 'selected' : ''}>${s.name}</option>`).join('') : '<option value="">Yok</option>';
+            subSel.disabled = !subs.length;
+        }
+        
+        window.copyExampleJson = () => {
+            const ex = `[
+  {
+    "text": "Soru metni buraya",
+    "options": ["A", "B", "C", "D", "E"],
+    "correctIndex": 0,
+    "explanation": "Açıklama"
+  }
+]`;
+            navigator.clipboard.writeText(ex);
+            showToast("Şablon Kopyalandı");
+        }
+
+        window.closeModal = () => { document.getElementById('modal-overlay').classList.add('hidden'); }
+
+        window.handleSubmit = async (e, type) => {
+            e.preventDefault();
+            const btn = e.target.querySelector('button');
+            const originalText = btn.innerText;
+            btn.innerText = "İşleniyor..."; btn.disabled = true;
+            const fd = new FormData(e.target);
+            const d = Object.fromEntries(fd.entries());
+            const path = `artifacts/${appId}/users/${currentUser.uid}`;
+
+            try {
+                if (type === 'category') {
+                     await addDoc(collection(db, path, 'categories'), { name: d.name, createdAt: Date.now() });
+                } else if (type === 'subcategory') {
+                     await addDoc(collection(db, path, 'subcategories'), { name: d.name, catId: d.catId, createdAt: Date.now() });
+                } else if (type === 'global-test-json') {
+                    const qs = JSON.parse(d.questionsJson);
+                    const commonData = { 
+                        title: d.title, 
+                        description: d.description || "", // Save description
+                        subId: d.subId, 
+                        questionCount: qs.length 
+                    };
+
+                    if (currentEditingId) {
+                        await updateDoc(doc(db, path, 'tests', currentEditingId), commonData);
+                        const oldQs = questions.filter(q => q.testId === currentEditingId);
+                        oldQs.forEach(async q => await deleteDoc(doc(db, path, 'questions', q.id)));
+                        await Promise.all(qs.map(q => addDoc(collection(db, path, 'questions'), { ...q, testId: currentEditingId })));
+                    } else {
+                        const ref = await addDoc(collection(db, path, 'tests'), { ...commonData, createdAt: Date.now() });
+                        await Promise.all(qs.map(q => addDoc(collection(db, path, 'questions'), { ...q, testId: ref.id })));
+                    }
+                }
+                closeModal();
+                showToast("İşlem Başarılı");
+            } catch(err) { showToast("Hata oluştu: " + err.message, "error"); }
+            finally { btn.innerText = originalText; btn.disabled = false; }
+        }
+
+        window.deleteItem = async (col, id) => {
+            if(!confirm("Bu öğeyi silmek istediğinize emin misiniz?")) return;
+            await deleteDoc(doc(db, `artifacts/${appId}/users/${currentUser.uid}`, col, id));
+            showToast("Öğe Silindi");
+        }
+        
+        window.resetProgress = async () => {
+            if(!confirm("DİKKAT: Çözdüğünüz tüm testlerin sonuçları silinecek ve ilerlemeniz sıfırlanacak. Bu işlem geri alınamaz. Devam edilsin mi?")) return;
+            const path = `artifacts/${appId}/users/${currentUser.uid}`;
+            const promises = results.map(r => deleteDoc(doc(db, path, 'results', r.id)));
+            try {
+                await Promise.all(promises);
+                showToast("İlerleme Başarıyla Sıfırlandı");
+            } catch(e) {
+                console.error(e);
+                showToast("Hata oluştu", "error");
+            }
+        }
+
+        window.showToast = (title, type = "success") => {
+            const t = document.getElementById('toast');
+            document.getElementById('toast-message').innerText = title;
+            t.className = `fixed bottom-8 right-8 px-6 py-4 rounded-xl shadow-2xl transform transition-all duration-300 z-[80] flex items-center gap-3 text-sm font-bold border backdrop-blur-xl ${type === 'error' ? 'bg-[var(--bg-card)] border-red-500/50 text-red-500' : 'bg-[var(--bg-card)] border-emerald-500/50 text-emerald-500'}`;
+            t.classList.remove('translate-y-32', 'opacity-0');
+            setTimeout(() => t.classList.add('translate-y-32', 'opacity-0'), 3000);
+        }
+
+        init();
+    </script>
+</body>
+</html>
