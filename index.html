@@ -1239,24 +1239,23 @@
                 }
                 const catOpts = categories.map(c => `<option value="${c.id}" ${c.id === selCat ? 'selected' : ''}>${c.name}</option>`).join('');
                 body.innerHTML = `
-                    <form onsubmit="handleSubmit(event, 'global-test-json')" class="space-y-5">
-                        <div class="grid grid-cols-2 gap-4">
-                            <div><label class="text-[11px] font-bold text-[var(--text-muted)] uppercase block mb-1.5 ml-1">Ders</label><select id="modal-cat-select" onchange="filterSubcatsInModal()" class="w-full input-immersive rounded-xl p-3 text-xs"><option value="">Seçiniz</option>${catOpts}</select></div>
-                            <div><label class="text-[11px] font-bold text-[var(--text-muted)] uppercase block mb-1.5 ml-1">Konu</label><select name="subId" id="modal-sub-select" required class="w-full input-immersive rounded-xl p-3 text-xs disabled:opacity-50"><option value="">Önce ders seçiniz...</option></select></div>
+                    <form onsubmit="handleSubmit(event, 'global-test-json')" class="space-y-3">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div><label class="text-[10px] font-bold text-[var(--text-muted)] uppercase block mb-1 ml-1">Ders</label><select id="modal-cat-select" onchange="filterSubcatsInModal()" class="w-full input-immersive rounded-lg p-2 text-xs"><option value="">Seçiniz</option>${catOpts}</select></div>
+                            <div><label class="text-[10px] font-bold text-[var(--text-muted)] uppercase block mb-1 ml-1">Konu</label><select name="subId" id="modal-sub-select" required class="w-full input-immersive rounded-lg p-2 text-xs disabled:opacity-50"><option value="">Önce ders...</option></select></div>
                         </div>
-                        <div><label class="text-[11px] font-bold text-[var(--text-muted)] uppercase block mb-1.5 ml-1">Test Başlığı</label><input name="title" value="${testData?.title || ''}" required class="w-full input-immersive rounded-xl p-3 text-sm font-semibold" placeholder="Örn: Tarih Deneme 1"></div>
-                        <div>
-                            <label class="text-[11px] font-bold text-[var(--text-muted)] uppercase block mb-1.5 ml-1">Açıklama (Opsiyonel)</label>
-                            <input name="description" value="${testData?.description || ''}" class="w-full input-immersive rounded-xl p-3 text-sm font-medium" placeholder="Test içeriği hakkında kısa bilgi...">
+                        <div class="grid grid-cols-2 gap-3">
+                            <div><label class="text-[10px] font-bold text-[var(--text-muted)] uppercase block mb-1 ml-1">Başlık</label><input name="title" value="${testData?.title || ''}" required class="w-full input-immersive rounded-lg p-2 text-xs font-semibold" placeholder="Örn: Deneme 1"></div>
+                            <div><label class="text-[10px] font-bold text-[var(--text-muted)] uppercase block mb-1 ml-1">Açıklama</label><input name="description" value="${testData?.description || ''}" class="w-full input-immersive rounded-lg p-2 text-xs" placeholder="Kısa bilgi..."></div>
                         </div>
-                        <div>
-                            <div class="flex justify-between items-center mb-1.5 ml-1">
-                                <label class="text-[11px] font-bold text-[var(--text-muted)] uppercase">Sorular (JSON)</label>
-                                <span class="text-[10px] text-primary cursor-pointer hover:underline font-bold bg-primary/10 px-2 py-0.5 rounded" onclick="copyExampleJson()">Örnek Şablon Kopyala</span>
+                        <div class="flex-1 min-h-0 flex flex-col">
+                            <div class="flex justify-between items-center mb-1 ml-1">
+                                <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase">Sorular (JSON)</label>
+                                <span class="text-[10px] text-primary cursor-pointer hover:underline font-bold bg-primary/10 px-2 py-0.5 rounded" onclick="copyExampleJson()">Şablon Kopyala</span>
                             </div>
-                            <textarea name="questionsJson" rows="10" required class="w-full input-immersive rounded-xl p-3 text-[var(--text-main)] font-mono text-[11px] resize-none leading-relaxed">${jsonContent}</textarea>
+                            <textarea name="questionsJson" required class="w-full input-immersive rounded-lg p-2 text-[var(--text-main)] font-mono text-[10px] resize-none leading-relaxed flex-1" style="min-height: 150px; max-height: 300px;">${jsonContent}</textarea>
                         </div>
-                        <button class="w-full bg-gradient-to-r from-teal-500 to-indigo-600 hover:from-teal-400 hover:to-indigo-500 text-white py-3.5 rounded-xl font-bold text-sm shadow-lg shadow-teal-500/20 transition-all hover:scale-[1.01] active:scale-[0.99] mt-2">${id ? 'Güncelle' : 'Oluştur'}</button>
+                        <button class="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white py-2.5 rounded-lg font-bold text-xs shadow-lg shadow-emerald-500/20 transition-all hover:scale-[1.01] active:scale-[0.99] mt-1">${id ? 'Güncelle' : 'Oluştur'}</button>
                     </form>`;
                 setTimeout(() => filterSubcatsInModal(selSub), 100);
             } else if (type === 'category') {
@@ -1439,4 +1438,3 @@
     </script>
 </body>
 </html>
-
