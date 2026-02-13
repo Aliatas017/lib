@@ -19,24 +19,17 @@
             theme: {
                 extend: {
                     colors: {
-                        // Refined Primary Palette (Teal/Emerald Mix)
                         primary: "#14b8a6", // Teal 500
                         "primary-hover": "#0d9488", // Teal 600
-                        
-                        // Premium Slate Palette
                         "slate-850": "#172033",
                         "slate-900": "#0f172a",
                         "slate-950": "#020617",
-
-                        // Semantic Colors
                         "bg-dark": "#020617", 
                         "surface-dark": "#0f172a", 
                         "card-dark": "#1e293b", 
-                        
-                        "bg-light": "#F5F2EB", // Warm Cream (Updated for eye comfort)
+                        "bg-light": "#F5F2EB", // Warm Cream
                         "surface-light": "#ffffff", 
                         "card-light": "#f1f5f9",
-                        
                         "text-light": "#0f172a",
                     },
                     fontFamily: { 
@@ -75,13 +68,12 @@
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; -webkit-tap-highlight-color: transparent; }
         
-        /* Tema Bazlı Değişkenler */
         :root {
-            --bg-body: #F5F2EB; /* Warm Cream - Göz yormayan */
+            --bg-body: #F5F2EB;
             --bg-surface: #ffffff;
-            --bg-card: rgba(255, 255, 255, 0.6); /* Biraz daha transparan */
-            --border-color: #dcdcdc; /* Daha yumuşak gri */
-            --text-main: #2c3e50; /* Daha yumuşak siyah (koyu lacivert-gri) */
+            --bg-card: rgba(255, 255, 255, 0.6);
+            --border-color: #dcdcdc;
+            --text-main: #2c3e50;
             --text-muted: #64748b;
             --glass-border: 1px solid rgba(255,255,255,0.5);
             --shadow-soft: 0 4px 20px rgba(100, 100, 100, 0.05);
@@ -102,7 +94,6 @@
         body { 
             background-color: var(--bg-body); 
             color: var(--text-main); 
-            /* Açık modda gradienti daha soft yap */
             background-image: radial-gradient(at 0% 0%, rgba(20, 184, 166, 0.05) 0px, transparent 50%), 
                               radial-gradient(at 100% 100%, rgba(99, 102, 241, 0.05) 0px, transparent 50%);
             background-attachment: fixed;
@@ -147,7 +138,7 @@
         .glass-card:hover::after { opacity: 1; }
 
         .input-immersive {
-            background: rgba(0, 0, 0, 0.02); /* Çok hafif gri arka plan */
+            background: rgba(0, 0, 0, 0.02);
             border: 1px solid var(--border-color);
             color: var(--text-main);
             transition: all 0.2s ease;
@@ -311,14 +302,14 @@
 
     <!-- Modals & Toasts -->
     <div id="modal-overlay" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md hidden z-[60] flex items-center justify-center p-4 transition-all duration-300">
-        <div class="bg-[var(--bg-surface)] rounded-3xl w-full max-w-xl shadow-2xl transform scale-95 opacity-0 transition-all duration-300 flex flex-col max-h-[90vh] border border-[var(--border-color)]" id="modal-content">
+        <div class="bg-[var(--bg-surface)] rounded-3xl w-full max-w-2xl shadow-2xl transform scale-95 opacity-0 transition-all duration-300 flex flex-col max-h-[85vh] border border-[var(--border-color)]" id="modal-content">
             <div class="p-6 border-b border-[var(--border-color)] flex justify-between items-center shrink-0">
                 <h3 id="modal-title" class="text-lg font-bold text-[var(--text-main)] tracking-tight">Başlık</h3>
                 <button onclick="closeModal()" class="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors p-2 rounded-full hover:bg-[var(--bg-card)]">
                     <span class="material-symbols-rounded text-xl">close</span>
                 </button>
             </div>
-            <div id="modal-body" class="p-6 overflow-y-auto thin-scroll"></div>
+            <div id="modal-body" class="p-6 overflow-hidden flex-1 flex flex-col h-full"></div>
         </div>
     </div>
 
@@ -1030,7 +1021,7 @@
                     document.getElementById('quiz-progress').style.width = `${progress}%`;
                     const optionsContainer = document.getElementById('quiz-options-list');
                     optionsContainer.innerHTML = q.options.map((opt, i) => {
-                        let baseClass = "w-full text-left p-5 rounded-2xl option-card relative overflow-hidden flex items-center gap-5 text-[var(--text-main)] text-base font-medium transition-all duration-300 border border-[var(--border-color)] shadow-sm hover:shadow-md";
+                        let baseClass = "w-full text-left p-3.5 rounded-xl option-card relative overflow-hidden flex items-center gap-3 text-[var(--text-main)] text-sm font-medium transition-all duration-300 border border-[var(--border-color)] shadow-sm hover:shadow-md";
                         let statusClass = "hover:bg-[var(--bg-surface)]";
                         let letterClass = "border-[var(--text-muted)] text-[var(--text-muted)] bg-[var(--bg-surface)]";
                         if (isAnswered) {
@@ -1040,7 +1031,7 @@
                         }
                         return `
                         <button id="opt-btn-${i}" onclick="selectOption('${q.id}', ${i})" class="${baseClass} ${statusClass}" ${isAnswered ? 'disabled' : ''}>
-                            <div class="opt-letter w-10 h-10 rounded-xl border-2 ${letterClass} flex items-center justify-center text-sm font-bold transition-colors shrink-0 shadow-inner">
+                            <div class="opt-letter w-8 h-8 rounded-lg border-2 ${letterClass} flex items-center justify-center text-xs font-bold transition-colors shrink-0 shadow-inner">
                                 ${String.fromCharCode(65+i)}
                             </div>
                             <span class="leading-relaxed text-left">${opt}</span>
@@ -1055,13 +1046,13 @@
             const { currentIndex, questions } = activeQuizData;
             const actionContainer = document.getElementById('quiz-header-actions');
             const prevBtn = currentIndex > 0 
-                ? `<button onclick="quizNav(-1)" class="bg-[var(--bg-card)] text-[var(--text-main)] hover:bg-[var(--bg-surface)] px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 border border-[var(--border-color)] shadow-sm transition-all hover:-translate-x-1"><span class="material-symbols-rounded text-lg">arrow_back</span> <span class="hidden md:inline">Önceki</span></button>` 
+                ? `<button onclick="quizNav(-1)" class="bg-[var(--bg-card)] text-[var(--text-main)] hover:bg-[var(--bg-surface)] px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-2 border border-[var(--border-color)] shadow-sm transition-all hover:-translate-x-1"><span class="material-symbols-rounded text-base">arrow_back</span> <span class="hidden md:inline">Önceki</span></button>` 
                 : ``;
             const isLast = currentIndex === questions.length - 1;
             if (isLast) {
-                actionContainer.innerHTML = `${prevBtn}<button onclick="submitQuiz()" class="bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-400 hover:to-emerald-500 text-white px-6 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 animate-fade-in shadow-lg shadow-teal-500/30 hover:scale-105 transition-transform">Bitir <span class="material-symbols-rounded text-lg">check_circle</span></button>`;
+                actionContainer.innerHTML = `${prevBtn}<button onclick="submitQuiz()" class="bg-gradient-to-r from-teal-500 to-emerald-600 hover:from-teal-400 hover:to-emerald-500 text-white px-5 py-2 rounded-lg text-xs font-bold flex items-center gap-2 animate-fade-in shadow-lg shadow-teal-500/30 hover:scale-105 transition-transform">Bitir <span class="material-symbols-rounded text-base">check_circle</span></button>`;
             } else {
-                actionContainer.innerHTML = `${prevBtn}<button onclick="quizNav(1)" class="bg-[var(--bg-surface)] text-[var(--text-main)] hover:bg-[var(--bg-card)] px-6 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 animate-fade-in shadow-lg border border-[var(--border-color)] transition-all hover:translate-x-1">Sonraki <span class="material-symbols-rounded text-lg">arrow_forward</span></button>`;
+                actionContainer.innerHTML = `${prevBtn}<button onclick="quizNav(1)" class="bg-[var(--bg-surface)] text-[var(--text-main)] hover:bg-[var(--bg-card)] px-5 py-2 rounded-lg text-xs font-bold flex items-center gap-2 animate-fade-in shadow-lg border border-[var(--border-color)] transition-all hover:translate-x-1">Sonraki <span class="material-symbols-rounded text-base">arrow_forward</span></button>`;
             }
         }
 
@@ -1085,48 +1076,48 @@
             const progress = ((currentIndex + 1) / questions.length) * 100;
             container.innerHTML = `
                 <div class="fixed inset-0 bg-[var(--bg-body)] z-[60] flex flex-col animate-fade-in overflow-hidden">
-                    <div class="h-1.5 bg-[var(--bg-surface)] w-full relative z-30">
+                    <div class="h-1 bg-[var(--bg-surface)] w-full relative z-30">
                         <div id="quiz-progress" class="h-full bg-gradient-to-r from-teal-400 to-indigo-500 transition-all duration-300 ease-out shadow-glow" style="width: ${progress}%"></div>
                     </div>
-                    <div class="h-20 px-4 md:px-8 flex items-center justify-between shrink-0 relative z-20 glass-panel border-b border-[var(--border-color)]">
+                    <div class="h-14 px-4 md:px-6 flex items-center justify-between shrink-0 relative z-20 glass-panel border-b border-[var(--border-color)]">
                         <div class="flex items-center justify-start shrink-0 relative z-10">
-                            <button onclick="exitQuizToContext()" class="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors flex items-center justify-center w-11 h-11 rounded-xl bg-[var(--bg-card)] border border-[var(--border-color)] hover:bg-[var(--bg-surface)] shrink-0 shadow-sm" title="Geri Dön">
-                                <span class="material-symbols-rounded text-xl">arrow_back</span>
+                            <button onclick="exitQuizToContext()" class="text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors flex items-center justify-center w-9 h-9 rounded-lg bg-[var(--bg-card)] border border-[var(--border-color)] hover:bg-[var(--bg-surface)] shrink-0 shadow-sm" title="Geri Dön">
+                                <span class="material-symbols-rounded text-lg">arrow_back</span>
                             </button>
                         </div>
-                        <div class="absolute inset-0 hidden md:flex items-center justify-center pointer-events-none px-24 md:px-32">
-                            <h2 class="text-base md:text-lg font-bold text-[var(--text-main)] truncate text-center w-full pointer-events-auto opacity-90">${test.title}</h2>
+                        <div class="absolute inset-0 hidden md:flex items-center justify-center pointer-events-none px-20 md:px-32">
+                            <h2 class="text-sm md:text-base font-bold text-[var(--text-main)] truncate text-center w-full pointer-events-auto opacity-90">${test.title}</h2>
                         </div>
-                        <div class="flex items-center justify-end gap-4 shrink-0 relative z-10">
-                            <div class="hidden sm:block text-xs font-mono text-[var(--text-muted)] bg-[var(--bg-card)] px-4 py-2 rounded-xl border border-[var(--border-color)] shadow-inner"><span id="quiz-counter-current" class="text-[var(--text-main)] font-bold text-sm">${currentIndex + 1}</span> <span class="opacity-40 mx-1">/</span> ${questions.length}</div>
-                            <div id="quiz-header-actions" class="flex gap-3"></div>
+                        <div class="flex items-center justify-end gap-3 shrink-0 relative z-10">
+                            <div class="hidden sm:block text-[10px] font-mono text-[var(--text-muted)] bg-[var(--bg-card)] px-3 py-1.5 rounded-lg border border-[var(--border-color)] shadow-inner"><span id="quiz-counter-current" class="text-[var(--text-main)] font-bold text-xs">${currentIndex + 1}</span> <span class="opacity-40 mx-1">/</span> ${questions.length}</div>
+                            <div id="quiz-header-actions" class="flex gap-2"></div>
                         </div>
                     </div>
                     <div class="flex-1 w-full h-full overflow-hidden relative z-10 flex flex-col items-center bg-[var(--bg-body)]">
-                        <div class="w-full max-w-4xl h-full flex flex-col p-4 md:p-8 quiz-content-area overflow-y-auto thin-scroll">
-                            <div class="flex-none mb-6 text-left">
-                                <h2 id="quiz-question-text" class="text-xl md:text-2xl font-bold text-[var(--text-main)] leading-relaxed tracking-tight transition-all duration-300 ease-out whitespace-pre-wrap">${q.text}</h2>
+                        <div class="w-full max-w-3xl h-full flex flex-col p-4 quiz-content-area overflow-y-auto thin-scroll">
+                            <div class="flex-none mb-4 text-left">
+                                <h2 id="quiz-question-text" class="text-base md:text-lg font-bold text-[var(--text-main)] leading-relaxed tracking-tight transition-all duration-300 ease-out whitespace-pre-wrap">${q.text}</h2>
                             </div>
                             <div class="flex-none w-full">
-                                <div id="quiz-options-list" class="flex flex-col space-y-4"></div>
+                                <div id="quiz-options-list" class="flex flex-col space-y-2.5"></div>
                             </div>
-                            <div id="quiz-explanation-wrapper" class="hidden mt-8 animate-fade-in flex-none">
-                                <div class="bg-[var(--bg-card)] p-6 rounded-2xl border border-[var(--border-color)] relative shadow-lg overflow-hidden group">
-                                    <div class="absolute left-0 top-0 w-1.5 h-full bg-teal-500"></div>
-                                    <div class="flex items-center gap-2 text-teal-500 text-xs font-bold uppercase tracking-widest mb-2">
-                                        <span class="material-symbols-rounded text-lg">lightbulb</span> AÇIKLAMA
+                            <div id="quiz-explanation-wrapper" class="hidden mt-6 animate-fade-in flex-none">
+                                <div class="bg-[var(--bg-card)] p-4 rounded-xl border border-[var(--border-color)] relative shadow-lg overflow-hidden group">
+                                    <div class="absolute left-0 top-0 w-1 h-full bg-teal-500"></div>
+                                    <div class="flex items-center gap-2 text-teal-500 text-[10px] font-bold uppercase tracking-widest mb-1.5">
+                                        <span class="material-symbols-rounded text-base">lightbulb</span> AÇIKLAMA
                                     </div>
-                                    <p id="quiz-explanation-text" class="text-[var(--text-muted)] text-base leading-relaxed"></p>
+                                    <p id="quiz-explanation-text" class="text-[var(--text-muted)] text-sm leading-relaxed"></p>
                                 </div>
                             </div>
-                            <div class="h-12 flex-none"></div> 
+                            <div class="h-8 flex-none"></div> 
                         </div>
                     </div>
                 </div>`;
             updateQuizNavButtons(); 
             const optionsContainer = document.getElementById('quiz-options-list');
             optionsContainer.innerHTML = q.options.map((opt, i) => {
-                let baseClass = "w-full text-left p-5 rounded-2xl option-card relative overflow-hidden flex items-center gap-5 text-[var(--text-main)] text-base font-medium transition-all duration-300 border border-[var(--border-color)] shadow-sm hover:shadow-md";
+                let baseClass = "w-full text-left p-3.5 rounded-xl option-card relative overflow-hidden flex items-center gap-3 text-[var(--text-main)] text-sm font-medium transition-all duration-300 border border-[var(--border-color)] shadow-sm hover:shadow-md";
                 let statusClass = "hover:bg-[var(--bg-surface)]";
                 let letterClass = "border-[var(--text-muted)] text-[var(--text-muted)] bg-[var(--bg-surface)]";
                 if (isAnswered) {
@@ -1136,7 +1127,7 @@
                 }
                 return `
                 <button id="opt-btn-${i}" onclick="selectOption('${q.id}', ${i})" class="${baseClass} ${statusClass}" ${isAnswered ? 'disabled' : ''}>
-                    <div class="opt-letter w-10 h-10 rounded-xl border-2 ${letterClass} flex items-center justify-center text-sm font-bold transition-colors shrink-0 shadow-inner">
+                    <div class="opt-letter w-8 h-8 rounded-lg border-2 ${letterClass} flex items-center justify-center text-xs font-bold transition-colors shrink-0 shadow-inner">
                         ${String.fromCharCode(65+i)}
                     </div>
                     <span class="leading-relaxed text-left">${opt}</span>
@@ -1239,23 +1230,23 @@
                 }
                 const catOpts = categories.map(c => `<option value="${c.id}" ${c.id === selCat ? 'selected' : ''}>${c.name}</option>`).join('');
                 body.innerHTML = `
-                    <form onsubmit="handleSubmit(event, 'global-test-json')" class="space-y-3">
-                        <div class="grid grid-cols-2 gap-3">
-                            <div><label class="text-[10px] font-bold text-[var(--text-muted)] uppercase block mb-1 ml-1">Ders</label><select id="modal-cat-select" onchange="filterSubcatsInModal()" class="w-full input-immersive rounded-lg p-2 text-xs"><option value="">Seçiniz</option>${catOpts}</select></div>
-                            <div><label class="text-[10px] font-bold text-[var(--text-muted)] uppercase block mb-1 ml-1">Konu</label><select name="subId" id="modal-sub-select" required class="w-full input-immersive rounded-lg p-2 text-xs disabled:opacity-50"><option value="">Önce ders...</option></select></div>
+                    <form onsubmit="handleSubmit(event, 'global-test-json')" class="flex flex-col h-full gap-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div><label class="text-[10px] font-bold text-[var(--text-muted)] uppercase block mb-1 ml-1">Ders</label><select id="modal-cat-select" onchange="filterSubcatsInModal()" class="w-full input-immersive rounded-lg p-3 text-sm"><option value="">Seçiniz</option>${catOpts}</select></div>
+                            <div><label class="text-[10px] font-bold text-[var(--text-muted)] uppercase block mb-1 ml-1">Konu</label><select name="subId" id="modal-sub-select" required class="w-full input-immersive rounded-lg p-3 text-sm disabled:opacity-50"><option value="">Önce ders...</option></select></div>
                         </div>
-                        <div class="grid grid-cols-2 gap-3">
-                            <div><label class="text-[10px] font-bold text-[var(--text-muted)] uppercase block mb-1 ml-1">Başlık</label><input name="title" value="${testData?.title || ''}" required class="w-full input-immersive rounded-lg p-2 text-xs font-semibold" placeholder="Örn: Deneme 1"></div>
-                            <div><label class="text-[10px] font-bold text-[var(--text-muted)] uppercase block mb-1 ml-1">Açıklama</label><input name="description" value="${testData?.description || ''}" class="w-full input-immersive rounded-lg p-2 text-xs" placeholder="Kısa bilgi..."></div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div><label class="text-[10px] font-bold text-[var(--text-muted)] uppercase block mb-1 ml-1">Başlık</label><input name="title" value="${testData?.title || ''}" required class="w-full input-immersive rounded-lg p-3 text-sm font-semibold" placeholder="Örn: Deneme 1"></div>
+                            <div><label class="text-[10px] font-bold text-[var(--text-muted)] uppercase block mb-1 ml-1">Açıklama</label><input name="description" value="${testData?.description || ''}" class="w-full input-immersive rounded-lg p-3 text-sm" placeholder="Kısa bilgi..."></div>
                         </div>
-                        <div class="flex-1 min-h-0 flex flex-col">
+                        <div class="flex-1 flex flex-col min-h-0">
                             <div class="flex justify-between items-center mb-1 ml-1">
                                 <label class="text-[10px] font-bold text-[var(--text-muted)] uppercase">Sorular (JSON)</label>
                                 <span class="text-[10px] text-primary cursor-pointer hover:underline font-bold bg-primary/10 px-2 py-0.5 rounded" onclick="copyExampleJson()">Şablon Kopyala</span>
                             </div>
-                            <textarea name="questionsJson" required class="w-full input-immersive rounded-lg p-2 text-[var(--text-main)] font-mono text-[10px] resize-none leading-relaxed flex-1" style="min-height: 150px; max-height: 300px;">${jsonContent}</textarea>
+                            <textarea name="questionsJson" required class="flex-1 w-full input-immersive rounded-lg p-3 text-[var(--text-main)] font-mono text-xs resize-none leading-relaxed">${jsonContent}</textarea>
                         </div>
-                        <button class="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white py-2.5 rounded-lg font-bold text-xs shadow-lg shadow-emerald-500/20 transition-all hover:scale-[1.01] active:scale-[0.99] mt-1">${id ? 'Güncelle' : 'Oluştur'}</button>
+                        <button class="w-full bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-white py-3 rounded-lg font-bold text-sm shadow-lg shadow-emerald-500/20 transition-all hover:scale-[1.01] active:scale-[0.99] mt-1">${id ? 'Güncelle' : 'Oluştur'}</button>
                     </form>`;
                 setTimeout(() => filterSubcatsInModal(selSub), 100);
             } else if (type === 'category') {
