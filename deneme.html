@@ -19,6 +19,7 @@
             theme: {
                 extend: {
                     colors: {
+                        // Refined Primary Palette (Teal/Emerald Mix)
                         primary: "#14b8a6", // Teal 500
                         "primary-hover": "#0d9488", // Teal 600
                         
@@ -1166,6 +1167,17 @@
                             return `<div class="text-xs md:text-sm ${style} flex items-center gap-3 bg-[var(--bg-surface)] p-3 rounded-xl border border-transparent transition-colors ${i===q.correctIndex ? 'bg-emerald-500/5 border-emerald-500/10' : ''}">${icon ? `<span class="material-symbols-rounded text-lg">${icon}</span>` : '<span class="w-6 h-6 flex items-center justify-center border border-[var(--text-muted)]/30 rounded-full text-[10px]">' + String.fromCharCode(65+i) + '</span>'} ${opt}</div>`;
                         }).join('')}
                     </div>
+                    ${q.explanation ? `
+                        <div class="mt-4 pl-0 md:pl-12">
+                            <div class="bg-[var(--bg-surface)] p-4 rounded-xl border border-dashed border-[var(--border-color)] text-sm relative overflow-hidden">
+                                <div class="absolute top-0 left-0 w-1 h-full bg-primary/50"></div>
+                                <div class="flex items-center gap-2 text-primary font-bold text-xs uppercase mb-2">
+                                    <span class="material-symbols-rounded text-base">info</span> Açıklama
+                                </div>
+                                <p class="text-[var(--text-muted)] leading-relaxed">${q.explanation}</p>
+                            </div>
+                        </div>
+                    ` : ''}
                 </div>`;
             }).join('');
 
