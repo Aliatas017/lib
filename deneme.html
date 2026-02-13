@@ -33,7 +33,7 @@
                         "surface-dark": "#0f172a", 
                         "card-dark": "#1e293b", 
                         
-                        "bg-light": "#FFFDF5", // Creamy Light
+                        "bg-light": "#F5F2EB", // Warm Cream (Updated for eye comfort)
                         "surface-light": "#ffffff", 
                         "card-light": "#f1f5f9",
                         
@@ -77,15 +77,15 @@
         
         /* Tema Bazlı Değişkenler */
         :root {
-            --bg-body: #FFFDF5; /* Creamy White */
+            --bg-body: #F5F2EB; /* Warm Cream - Göz yormayan */
             --bg-surface: #ffffff;
-            --bg-card: rgba(255, 255, 255, 0.7);
-            --border-color: #cbd5e1;
-            --text-main: #0f172a;
+            --bg-card: rgba(255, 255, 255, 0.6); /* Biraz daha transparan */
+            --border-color: #dcdcdc; /* Daha yumuşak gri */
+            --text-main: #2c3e50; /* Daha yumuşak siyah (koyu lacivert-gri) */
             --text-muted: #64748b;
-            --glass-border: 1px solid rgba(255,255,255,0.6);
-            --shadow-soft: 0 4px 20px rgba(148, 163, 184, 0.1);
-            --gradient-overlay: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.4) 100%);
+            --glass-border: 1px solid rgba(255,255,255,0.5);
+            --shadow-soft: 0 4px 20px rgba(100, 100, 100, 0.05);
+            --gradient-overlay: linear-gradient(180deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.6) 100%);
         }
         .dark:root {
             --bg-body: #020617;
@@ -102,8 +102,9 @@
         body { 
             background-color: var(--bg-body); 
             color: var(--text-main); 
-            background-image: radial-gradient(at 0% 0%, rgba(20, 184, 166, 0.03) 0px, transparent 50%), 
-                              radial-gradient(at 100% 100%, rgba(99, 102, 241, 0.03) 0px, transparent 50%);
+            /* Açık modda gradienti daha soft yap */
+            background-image: radial-gradient(at 0% 0%, rgba(20, 184, 166, 0.05) 0px, transparent 50%), 
+                              radial-gradient(at 100% 100%, rgba(99, 102, 241, 0.05) 0px, transparent 50%);
             background-attachment: fixed;
             transition: background-color 0.4s ease, color 0.4s ease;
         }
@@ -112,8 +113,8 @@
             background: var(--bg-surface);
             border-right: 1px solid var(--border-color);
             border-bottom: 1px solid var(--border-color); 
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
         }
 
         .glass-card {
@@ -139,14 +140,14 @@
         }
 
         .glass-card:hover {
-            border-color: rgba(20, 184, 166, 0.3);
+            border-color: rgba(20, 184, 166, 0.4);
             transform: translateY(-3px);
-            box-shadow: 0 15px 35px -5px rgba(0,0,0,0.2);
+            box-shadow: 0 15px 35px -5px rgba(0,0,0,0.1);
         }
         .glass-card:hover::after { opacity: 1; }
 
         .input-immersive {
-            background: rgba(15, 23, 42, 0.03);
+            background: rgba(0, 0, 0, 0.02); /* Çok hafif gri arka plan */
             border: 1px solid var(--border-color);
             color: var(--text-main);
             transition: all 0.2s ease;
@@ -159,7 +160,7 @@
         
         .input-immersive:focus {
             border-color: #14b8a6;
-            background: transparent;
+            background: var(--bg-surface);
             outline: none;
             box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.15);
         }
@@ -182,7 +183,7 @@
             border-color: #14b8a6;
             transform: translateX(4px);
         }
-        .option-card.selected-correct { border-color: #14b8a6; background: rgba(20, 184, 166, 0.1); color: #14b8a6; }
+        .option-card.selected-correct { border-color: #14b8a6; background: rgba(20, 184, 166, 0.15); color: #14b8a6; }
         .option-card.selected-wrong { border-color: #ef4444; background: rgba(239, 68, 68, 0.1); color: #ef4444; }
         .option-card.disabled { opacity: 0.6; cursor: default; transform: none !important; }
         
