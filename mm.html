@@ -99,15 +99,13 @@
         }
         .btn-gradient:active { transform: scale(0.96); filter: brightness(0.9); }
 
-        /* Kategori Renkleri (Sadece ince üst çizgi/border) */
+        /* Kategori Renkleri */
         .cat-havza { border-top-color: #a855f7; }
         .cat-amasya-g { border-top-color: #3b82f6; }
         .cat-erzurum { border-top-color: #10b981; }
         .cat-sivas { border-top-color: #f59e0b; }
         .cat-amasya-gor { border-top-color: #14b8a6; }
         .cat-misak { border-top-color: #f43f5e; }
-        .cat-yararli { border-top-color: #6366f1; }
-        .cat-zararli { border-top-color: #ef4444; }
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen m-0 sm:p-4"> 
@@ -143,12 +141,12 @@
                     </div>
                 </div>
                 
-                <div id="pool" class="tap-zone flex flex-wrap content-start gap-2 min-h-[130px] max-h-[22vh] overflow-y-auto hide-scroll p-2.5 transition-all" data-target="pool">
+                <div id="pool" class="tap-zone flex flex-wrap content-start gap-2 min-h-[140px] max-h-[25vh] overflow-y-auto hide-scroll p-2.5 transition-all" data-target="pool">
                     <!-- Kartlar Buraya Gelecek -->
                 </div>
             </div>
 
-            <!-- Hedef Kategoriler (2 Sütunlu Grid, Karanlık Tasarım) -->
+            <!-- Hedef Kategoriler (2 Sütunlu Grid, 6 Kategori) -->
             <div class="grid grid-cols-2 gap-2.5" id="categoriesContainer">
                 
                 <!-- Havza -->
@@ -156,7 +154,8 @@
                     <div class="bg-[#18181b] py-2 px-1 text-center shadow-sm z-10 border-b border-slate-800">
                         <h3 class="font-bold text-[10px] text-purple-400 uppercase tracking-widest">Havza</h3>
                     </div>
-                    <div class="items-container flex-grow p-1.5 flex flex-col gap-1.5 h-[130px] overflow-y-auto hide-scroll bg-gradient-to-b from-[#121212] to-[#0a0a0c]"></div>
+                    <!-- Yükseklik 6 kategori için biraz daha artırıldı (h-[160px]) -->
+                    <div class="items-container flex-grow p-1.5 flex flex-col gap-1.5 h-[160px] overflow-y-auto hide-scroll bg-gradient-to-b from-[#121212] to-[#0a0a0c]"></div>
                 </div>
 
                 <!-- Amasya G. -->
@@ -164,7 +163,7 @@
                     <div class="bg-[#18181b] py-2 px-1 text-center shadow-sm z-10 border-b border-slate-800">
                         <h3 class="font-bold text-[10px] text-blue-400 uppercase tracking-widest">Amasya G.</h3>
                     </div>
-                    <div class="items-container flex-grow p-1.5 flex flex-col gap-1.5 h-[130px] overflow-y-auto hide-scroll bg-gradient-to-b from-[#121212] to-[#0a0a0c]"></div>
+                    <div class="items-container flex-grow p-1.5 flex flex-col gap-1.5 h-[160px] overflow-y-auto hide-scroll bg-gradient-to-b from-[#121212] to-[#0a0a0c]"></div>
                 </div>
 
                 <!-- Erzurum -->
@@ -172,7 +171,7 @@
                     <div class="bg-[#18181b] py-2 px-1 text-center shadow-sm z-10 border-b border-slate-800">
                         <h3 class="font-bold text-[10px] text-emerald-400 uppercase tracking-widest">Erzurum</h3>
                     </div>
-                    <div class="items-container flex-grow p-1.5 flex flex-col gap-1.5 h-[130px] overflow-y-auto hide-scroll bg-gradient-to-b from-[#121212] to-[#0a0a0c]"></div>
+                    <div class="items-container flex-grow p-1.5 flex flex-col gap-1.5 h-[160px] overflow-y-auto hide-scroll bg-gradient-to-b from-[#121212] to-[#0a0a0c]"></div>
                 </div>
 
                 <!-- Sivas -->
@@ -180,7 +179,7 @@
                     <div class="bg-[#18181b] py-2 px-1 text-center shadow-sm z-10 border-b border-slate-800">
                         <h3 class="font-bold text-[10px] text-amber-400 uppercase tracking-widest">Sivas</h3>
                     </div>
-                    <div class="items-container flex-grow p-1.5 flex flex-col gap-1.5 h-[130px] overflow-y-auto hide-scroll bg-gradient-to-b from-[#121212] to-[#0a0a0c]"></div>
+                    <div class="items-container flex-grow p-1.5 flex flex-col gap-1.5 h-[160px] overflow-y-auto hide-scroll bg-gradient-to-b from-[#121212] to-[#0a0a0c]"></div>
                 </div>
 
                 <!-- Amasya Gör. -->
@@ -188,7 +187,7 @@
                     <div class="bg-[#18181b] py-2 px-1 text-center shadow-sm z-10 border-b border-slate-800">
                         <h3 class="font-bold text-[10px] text-teal-400 uppercase tracking-widest">Amasya Gör.</h3>
                     </div>
-                    <div class="items-container flex-grow p-1.5 flex flex-col gap-1.5 h-[130px] overflow-y-auto hide-scroll bg-gradient-to-b from-[#121212] to-[#0a0a0c]"></div>
+                    <div class="items-container flex-grow p-1.5 flex flex-col gap-1.5 h-[160px] overflow-y-auto hide-scroll bg-gradient-to-b from-[#121212] to-[#0a0a0c]"></div>
                 </div>
 
                 <!-- Misak-ı Milli -->
@@ -196,23 +195,7 @@
                     <div class="bg-[#18181b] py-2 px-1 text-center shadow-sm z-10 border-b border-slate-800">
                         <h3 class="font-bold text-[10px] text-rose-400 uppercase tracking-widest">Misak-ı Milli</h3>
                     </div>
-                    <div class="items-container flex-grow p-1.5 flex flex-col gap-1.5 h-[130px] overflow-y-auto hide-scroll bg-gradient-to-b from-[#121212] to-[#0a0a0c]"></div>
-                </div>
-
-                <!-- Yararlı Cem. -->
-                <div class="tap-zone drop-target-glow flex flex-col bg-[#121212] rounded-xl border-t-2 border-x border-b border-x-slate-800 border-b-slate-800 cat-yararli overflow-hidden transition-all duration-300" data-target="Yararlı Cem. ve Basın">
-                    <div class="bg-[#18181b] py-2 px-1 text-center shadow-sm z-10 border-b border-slate-800">
-                        <h3 class="font-bold text-[9px] text-indigo-400 uppercase tracking-widest">Yararlı Basın</h3>
-                    </div>
-                    <div class="items-container flex-grow p-1.5 flex flex-col gap-1.5 h-[130px] overflow-y-auto hide-scroll bg-gradient-to-b from-[#121212] to-[#0a0a0c]"></div>
-                </div>
-
-                <!-- Zararlı Cem. -->
-                <div class="tap-zone drop-target-glow flex flex-col bg-[#121212] rounded-xl border-t-2 border-x border-b border-x-slate-800 border-b-slate-800 cat-zararli overflow-hidden transition-all duration-300" data-target="Zararlı Cem. ve Basın">
-                    <div class="bg-[#18181b] py-2 px-1 text-center shadow-sm z-10 border-b border-slate-800">
-                        <h3 class="font-bold text-[9px] text-red-400 uppercase tracking-widest">Zararlı Basın</h3>
-                    </div>
-                    <div class="items-container flex-grow p-1.5 flex flex-col gap-1.5 h-[130px] overflow-y-auto hide-scroll bg-gradient-to-b from-[#121212] to-[#0a0a0c]"></div>
+                    <div class="items-container flex-grow p-1.5 flex flex-col gap-1.5 h-[160px] overflow-y-auto hide-scroll bg-gradient-to-b from-[#121212] to-[#0a0a0c]"></div>
                 </div>
 
             </div>
@@ -271,64 +254,64 @@
     </div>
 
     <script>
+        // Bilgi havuzu detaylandırıldı ve 6 kategoriye özel hale getirildi
         const rawData = [
-            // Havza
-            {"olay": "İzmir işgaline ilk planlı tepki", "kategori": "Havza Genelgesi"},
-            {"olay": "M. Kemal'in ilk sivil (yetki aşımı) belgesi", "kategori": "Havza Genelgesi"},
-            {"olay": "Hristiyanlara kötü davranmayın uyarısı", "kategori": "Havza Genelgesi"},
-            {"olay": "İstanbul'a ilk geri çağrılışı", "kategori": "Havza Genelgesi"},
-            {"olay": "Milli bilinci uyandıran ilk adım", "kategori": "Havza Genelgesi"},
+            // Havza Genelgesi (Detaylandırıldı)
+            {"olay": "İzmir'in işgaline ilk planlı ulusal tepki", "kategori": "Havza Genelgesi"},
+            {"olay": "M. Kemal'in sivil ilk belgesi (Yetki Aşımı)", "kategori": "Havza Genelgesi"},
+            {"olay": "Azınlıklara kötü davranmayın uyarısı (İşgale bahane vermemek)", "kategori": "Havza Genelgesi"},
+            {"olay": "M. Kemal'in İstanbul'a ilk kez geri çağrılışı", "kategori": "Havza Genelgesi"},
+            {"olay": "Milli bilinci uyandıran ilk resmi adım", "kategori": "Havza Genelgesi"},
+            {"olay": "Orduların ve silahların teslim edilmemesi çağrısı", "kategori": "Havza Genelgesi"},
 
-            // Amasya G.
-            {"olay": "Gerekçe, Amaç, Yöntem belirtildi", "kategori": "Amasya Genelgesi"},
-            {"olay": "'Milletin azim ve kararı kurtaracaktır.'", "kategori": "Amasya Genelgesi"},
-            {"olay": "Rejim değişikliği sinyali (İhtilal)", "kategori": "Amasya Genelgesi"},
-            {"olay": "Temsil Heyeti kurma fikri verildi", "kategori": "Amasya Genelgesi"},
-            {"olay": "Cevat Abbas yazdı (Mukaddes İttifak)", "kategori": "Amasya Genelgesi"},
-            {"olay": "İlk kez 'Milli Egemenlik' vurgusu", "kategori": "Amasya Genelgesi"},
+            // Amasya Genelgesi (Detaylandırıldı)
+            {"olay": "Kurtuluş Savaşının Gerekçe, Amaç ve Yöntemi", "kategori": "Amasya Genelgesi"},
+            {"olay": "'Milletin bağımsızlığını yine milletin azmi kurtaracaktır.'", "kategori": "Amasya Genelgesi"},
+            {"olay": "Üstü kapalı Rejim Değişikliği sinyali (İhtilal)", "kategori": "Amasya Genelgesi"},
+            {"olay": "Temsil Heyeti kurma fikri İLK KEZ verildi", "kategori": "Amasya Genelgesi"},
+            {"olay": "Cevat Abbas yazdı, komutanlar onayladı (Mukaddes İttifak)", "kategori": "Amasya Genelgesi"},
+            {"olay": "İlk kez 'Milli Egemenlik' kavramı vurgulandı", "kategori": "Amasya Genelgesi"},
+            {"olay": "Erzurum ve Sivas Kongrelerinin toplanma kararı", "kategori": "Amasya Genelgesi"},
+            {"olay": "Milli Mücadelenin 'Programı' niteliğindedir", "kategori": "Amasya Genelgesi"},
+            {"olay": "Gerekçe: 'İstanbul Hükümeti sorumluluğunu yerine getirememektedir'", "kategori": "Amasya Genelgesi"},
 
-            // Erzurum
-            {"olay": "Toplanış bölgesel, kararlar ulusal", "kategori": "Erzurum Kongresi"},
-            {"olay": "İlk kez Misak-ı Milli sınırları", "kategori": "Erzurum Kongresi"},
+            // Erzurum Kongresi (Detaylandırıldı)
+            {"olay": "Toplanış bakımından bölgesel, kararlar bakımından ulusal", "kategori": "Erzurum Kongresi"},
+            {"olay": "İlk kez Misak-ı Milli sınırlarından bahsedildi", "kategori": "Erzurum Kongresi"},
             {"olay": "Manda ve himaye İLK KEZ reddedildi", "kategori": "Erzurum Kongresi"},
-            {"olay": "Temsil Heyeti İLK KEZ kuruldu (Doğu)", "kategori": "Erzurum Kongresi"},
-            {"olay": "Askerlikten istifa sonrası 'İlk Sivil' iş", "kategori": "Erzurum Kongresi"},
-            {"olay": "İlk 'Geçici Hükümet' kurma fikri", "kategori": "Erzurum Kongresi"},
+            {"olay": "Temsil Heyeti İLK KEZ kuruldu (Sadece Doğu illeri)", "kategori": "Erzurum Kongresi"},
+            {"olay": "Askerlikten istifa eden M. Kemal'in 'İlk Sivil' çalışması", "kategori": "Erzurum Kongresi"},
+            {"olay": "İlk kez 'Geçici Hükümet' kurma kararı", "kategori": "Erzurum Kongresi"},
+            {"olay": "Doğu'daki tüm yararlı cemiyetlerin birleştirilmesi", "kategori": "Erzurum Kongresi"},
+            {"olay": "Mebusan Meclisi'nin derhal toplanması çağrısı yapıldı", "kategori": "Erzurum Kongresi"},
 
-            // Sivas
-            {"olay": "Toplanış/karar bakımından tam ulusal", "kategori": "Sivas Kongresi"},
-            {"olay": "Manda/himaye KESİN OLARAK reddedildi", "kategori": "Sivas Kongresi"},
-            {"olay": "Tüm cemiyetler birleştirildi (ARMHC)", "kategori": "Sivas Kongresi"},
-            {"olay": "Temsil Heyeti TÜM ÜLKEYİ temsil etti", "kategori": "Sivas Kongresi"},
-            {"olay": "Ali Fuat Paşa atandı (İlk Yürütme)", "kategori": "Sivas Kongresi"},
-            {"olay": "Damat Ferit istifası (İlk Siyasi Başarı)", "kategori": "Sivas Kongresi"},
+            // Sivas Kongresi (Detaylandırıldı)
+            {"olay": "Toplanış ve karar bakımından tam ulusal tek kongre", "kategori": "Sivas Kongresi"},
+            {"olay": "Manda ve himaye KESİN ve SON KEZ reddedildi", "kategori": "Sivas Kongresi"},
+            {"olay": "Tüm cemiyetler tek çatı altında birleştirildi (ARMHC)", "kategori": "Sivas Kongresi"},
+            {"olay": "Temsil Heyeti üye sayısı 15'e çıkıp TÜM ÜLKEYİ temsil etti", "kategori": "Sivas Kongresi"},
+            {"olay": "Ali Fuat Paşa'nın Batı'ya atanması (İlk Yürütme Yetkisi)", "kategori": "Sivas Kongresi"},
+            {"olay": "Damat Ferit'in istifası (Temsil Heyetinin İlk Siyasi Başarısı)", "kategori": "Sivas Kongresi"},
+            {"olay": "Milli Mücadelenin yayın organı 'İrade-i Milliye' gazetesi kuruldu", "kategori": "Sivas Kongresi"},
+            {"olay": "Tıbbiyeli Hikmet'in Manda karşıtı efsane konuşması", "kategori": "Sivas Kongresi"},
+            {"olay": "'Ya İstiklal Ya Ölüm' parolası benimsendi", "kategori": "Sivas Kongresi"},
 
-            // Amasya Gör.
-            {"olay": "Temsil Heyeti resmen/hukuken tanındı", "kategori": "Amasya Görüşmeleri"},
-            {"olay": "Mebusan Meclisi'nin açılma kararı", "kategori": "Amasya Görüşmeleri"},
-            {"olay": "Meclisin Anadolu'da toplanması reddedildi", "kategori": "Amasya Görüşmeleri"},
+            // Amasya Görüşmeleri (Detaylandırıldı)
+            {"olay": "İstanbul Hükümeti'nin Temsil Heyeti'ni resmen/hukuken tanıması", "kategori": "Amasya Görüşmeleri"},
+            {"olay": "Mebusan Meclisi'nin yeniden açılması kararı kesinleşti", "kategori": "Amasya Görüşmeleri"},
+            {"olay": "Meclisin Anadolu'da toplanması Kanun-i Esasi'ye aykırı bulunarak reddedildi", "kategori": "Amasya Görüşmeleri"},
+            {"olay": "İstanbul Hükümeti adına Salih Paşa katıldı", "kategori": "Amasya Görüşmeleri"},
+            {"olay": "Barış görüşmelerine Temsil Heyeti'nden isimlerin katılması istendi", "kategori": "Amasya Görüşmeleri"},
 
-            // Misak-ı Milli
-            {"olay": "Kapitülasyonlara ilk kesin tepki", "kategori": "Misak-ı Milli"},
-            {"olay": "Kars, Ardahan, Batum'da Referandum", "kategori": "Misak-ı Milli"},
-            {"olay": "'Felah-ı Vatan Grubu' kuruldu", "kategori": "Misak-ı Milli"},
-            {"olay": "Türk çoğunluğu bazlı Milli Sınırlar", "kategori": "Misak-ı Milli"},
-            {"olay": "İstanbul'un resmen işgaline zemin hazırladı", "kategori": "Misak-ı Milli"},
-
-            // Yararlı
-            {"olay": "Hukuk-u Beşer (Hasan Tahsin)", "kategori": "Yararlı Cem. ve Basın"},
-            {"olay": "İrade-i Milliye (Sivas Kong. yayını)", "kategori": "Yararlı Cem. ve Basın"},
-            {"olay": "Açık Söz (İlk İstiklal Marşı gazetesi)", "kategori": "Yararlı Cem. ve Basın"},
-            {"olay": "Sebilürreşat (İlk İstiklal Marşı dergisi)", "kategori": "Yararlı Cem. ve Basın"},
-            {"olay": "Hakimiyet-i Milliye (Ankara-yarı resmi)", "kategori": "Yararlı Cem. ve Basın"},
-            {"olay": "Kilikyalılar Cemiyeti (Çukurova)", "kategori": "Yararlı Cem. ve Basın"},
-
-            // Zararlı
-            {"olay": "Etniki Eterya & Mavri Mira (Bizans)", "kategori": "Zararlı Cem. ve Basın"},
-            {"olay": "Pontus Rum Cemiyeti (Karadeniz)", "kategori": "Zararlı Cem. ve Basın"},
-            {"olay": "İngiliz Muhipleri (Manda savunucusu)", "kategori": "Zararlı Cem. ve Basın"},
-            {"olay": "Peyam-ı Sabah & Alemdar", "kategori": "Zararlı Cem. ve Basın"},
-            {"olay": "Yeni Dünya (Bolşevik eğilimli)", "kategori": "Zararlı Cem. ve Basın"}
+            // Misak-ı Milli (Detaylandırıldı)
+            {"olay": "Kapitülasyonlara ilk ve kesin tepki (Tam Bağımsızlık)", "kategori": "Misak-ı Milli"},
+            {"olay": "Kars, Ardahan, Batum'da (Elviye-i Selase) Referandum istendi", "kategori": "Misak-ı Milli"},
+            {"olay": "Batı Trakya'nın geleceği için Referandum istendi", "kategori": "Misak-ı Milli"},
+            {"olay": "Mebusan Meclisi'nde Rauf Orbay başkanlığında 'Felah-ı Vatan' kuruldu", "kategori": "Misak-ı Milli"},
+            {"olay": "Mondros sonrası işgal edilmemiş topraklar bazlı Milli Sınırlar", "kategori": "Misak-ı Milli"},
+            {"olay": "İstanbul'un İtilaf devletlerince resmen işgaline zemin hazırladı", "kategori": "Misak-ı Milli"},
+            {"olay": "Erzurum ve Sivas Kongresi kararlarının yasal onayıdır", "kategori": "Misak-ı Milli"},
+            {"olay": "Boğazların güvenliği sağlanırsa dünya ticaretine açılabileceği kararı", "kategori": "Misak-ı Milli"}
         ];
 
         let isGameOver = false;
