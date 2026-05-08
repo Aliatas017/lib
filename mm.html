@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Milli Mücadele: Karanlık Mod Mobil Oyun</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #050505;
+            --bg-panel: #121212;
+            --bg-card: #1e1e24;
+            --accent-glow: 0 0 15px rgba(99, 102, 241, 0.5);
+        }
+
+        body { 
+            font-family: 'Poppins', sans-serif; 
+            overscroll-behavior-y: none; 
+            -webkit-tap-highlight-color: transparent; 
+            background-color: #000; /* Masaüstü en dış arka plan */
+            color: #e2e8f0;
+        }
+        
+        /* Modern İnce Kaydırma Çubukları */
+        ::-webkit-scrollbar { width: 3px; height: 3px; background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
+        .hide-scroll { -ms-overflow-style: none; scrollbar-width: none; }
+        .hide-scroll::-webkit-scrollbar { display: none; }
+
+        /* Mobil Oyun Ekranı Simülasyonu */
+        .game-container {
+            width: 100%;
+            height: 100dvh;
+            max-width: 420px; 
+            max-height: 900px;
+            background-color: var(--bg-deep);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            margin: auto;
+            box-shadow: 0 0 40px rgba(255,255,255,0.05);
+        }
+
+        @media (min-width: 640px) {
+            .game-container {
+                height: 90vh;
+                border-radius: 2.5rem;
+                border: 8px solid #1e293b;
+            }
+        }
+
+        /* Glassmorphism ve Neon Efektler */
+        .glass-panel {
+            background: rgba(18, 18, 18, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .neon-text-indigo { text-shadow: 0 0 10px rgba(99,102,241,0.6); }
+        
+        /* Öğeler (Kartlar) */
+        .game-item {
+            background: var(--bg-card);
+            border: 1px solid #334155;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .item-selected {
+            transform: scale(1.03) translateY(-2px);
+            z-index: 20;
+            background: #1e1b4b !important; /* Koyu indigo arka plan */
+            border-color: #6366f1 !important;
+            box-shadow: var(--accent-glow);
+        }
+
+        /* Animasyonlar */
+        .pop-in { animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        @keyframes popIn {
+            0% { transform: scale(0.8) translateY(10px); opacity: 0; }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
+
+        .selection-mode-active .drop-target-glow {
+            animation: targetPulse 1.5s infinite alternate;
+        }
+
+        @keyframes targetPulse {
+            0% { border-color: rgba(99, 102, 241, 0.3); box-shadow: inset 0 0 10px rgba(99,102,241,0.1); }
+            100% { border-color: rgba(99, 102, 241, 0.8); box-shadow: inset 0 0 20px rgba(99,102,241,0.25); }
+        }
+
+        /* Gradient Buton */
+        .btn-gradient {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            transition: transform 0.1s, filter 0.2s;
+        }
+        .btn-gradient:active { transform: scale(0.96); filter: brightness(0.9); }
+
+        /* Kategori Renkleri (Sadece ince üst çizgi/border) */
+        .cat-havza { border-top-color: #a855f7; }
+        .cat-amasya-g { border-top-color: #3b82f6; }
+        .cat-erzurum { border-top-color: #10b981; }
+        .cat-sivas { border-top-color: #f59e0b; }
+        .cat-amasya-gor { border-top-color: #14b8a6; }
+        .cat-misak { border-top-color: #f43f5e; }
+        .cat-yararli { border-top-color: #6366f1; }
+        .cat-zararli { border-top-color: #ef4444; }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen m-0 sm:p-4"> 
+
+    <div class="game-container">
+        
+        <!-- Üst Bilgi (Oyun Header) -->
+        <header class="glass-panel p-4 z-20 flex-shrink-0 flex justify-between items-center relative shadow-lg">
+            <div class="flex flex-col">
+                <h1 class="text-lg font-black text-white leading-none tracking-wide neon-text-indigo uppercase">Milli Mücadele</h1>
+                <p class="text-[10px] text-indigo-300 font-semibold mt-1 tracking-widest uppercase">Operasyon Dosyaları</p>
+            </div>
+            <button id="submitBtn" class="btn-gradient text-white px-4 py-2 rounded-xl font-bold text-[11px] shadow-lg flex items-center gap-1.5 touch-manipulation uppercase tracking-wider">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                </svg>
+                DOĞRULA
+            </button>
+        </header>
+
+        <!-- Ana Oyun Alanı -->
+        <main class="flex-grow w-full p-3 flex flex-col gap-3 overflow-y-auto hide-scroll pb-[110px]" id="mainContainer">
+            
+            <!-- Görev Havuzu (Data Pool) -->
+            <div class="bg-[#121212] rounded-2xl border border-slate-800 flex flex-col relative z-10 flex-shrink-0 shadow-inner overflow-hidden">
+                <div class="flex justify-between items-center p-2.5 bg-[#18181b] border-b border-slate-800">
+                    <h2 class="text-[11px] font-bold text-slate-300 flex items-center gap-1.5 uppercase tracking-widest">
+                        <span class="w-2 h-2 rounded-full bg-indigo-500 animate-pulse"></span>
+                        Veri Havuzu
+                    </h2>
+                    <div class="text-[10px] font-bold text-slate-500 bg-slate-800/50 px-2 py-0.5 rounded-full">
+                        Kalan: <span id="poolCount" class="text-indigo-400">0</span>
+                    </div>
+                </div>
+                
+                <div id="pool" class="tap-zone flex flex-wrap content-start gap-2 min-h-[130px] max-h-[22vh] overflow-y-auto hide-scroll p-2.5 transition-all" data-target="pool">
+                    <!-- Kartlar Buraya Gelecek -->
+                </div>
+            </div>
+
+            <!-- Hedef Kategoriler (2 Sütunlu Grid, Karanlık Tasarım) -->
+            <div class="grid grid-cols-2 gap-2.5" id="categoriesContainer">
+                
+                <!-- Havza -->
+                <div class="tap-zone drop-target-glow flex flex-col bg-[#121212] rounded-xl border-t-2 border-x border-b border-x-slate-800 border-b-slate-800 cat-havza overflow-hidden transition-all duration-300" data-target="Havza Genelgesi">
+                    <div class="bg-[#18181b] py-2 px-1 text-center shadow-sm z-10 border-b border-slate-800">
+                        <h3 class="font-bold text-[10px] text-purple-400 uppercase tracking-widest">Havza</h3>
+                    </div>
+                    <div class="items-container flex-grow p-1.5 flex flex-col gap-1.5 h-[130px] overflow-y-auto hide-scroll bg-gradient-to-b from-[#121212] to-[#0a0a0c]"></div>
+                </div>
+
+                <!-- Amasya G. -->
+                <div class="tap-zone drop-target-glow flex flex-col bg-[#121212] rounded-xl border-t-2 border-x border-b border-x-slate-800 border-b-slate-800 cat-amasya-g overflow-hidden transition-all duration-300" data-target="Amasya Genelgesi">
+                    <div class="bg-[#18181b] py-2 px-1 text-center shadow-sm z-10 border-b border-slate-800">
+                        <h3 class="font-bold text-[10px] text-blue-400 uppercase tracking-widest">Amasya G.</h3>
+                    </div>
+                    <div class="items-container flex-grow p-1.5 flex flex-col gap-1.5 h-[130px] overflow-y-auto hide-scroll bg-gradient-to-b from-[#121212] to-[#0a0a0c]"></div>
+                </div>
+
+                <!-- Erzurum -->
+                <div class="tap-zone drop-target-glow flex flex-col bg-[#121212] rounded-xl border-t-2 border-x border-b border-x-slate-800 border-b-slate-800 cat-erzurum overflow-hidden transition-all duration-300" data-target="Erzurum Kongresi">
+                    <div class="bg-[#18181b] py-2 px-1 text-center shadow-sm z-10 border-b border-slate-800">
+                        <h3 class="font-bold text-[10px] text-emerald-400 uppercase tracking-widest">Erzurum</h3>
+                    </div>
+                    <div class="items-container flex-grow p-1.5 flex flex-col gap-1.5 h-[130px] overflow-y-auto hide-scroll bg-gradient-to-b from-[#121212] to-[#0a0a0c]"></div>
+                </div>
+
+                <!-- Sivas -->
+                <div class="tap-zone drop-target-glow flex flex-col bg-[#121212] rounded-xl border-t-2 border-x border-b border-x-slate-800 border-b-slate-800 cat-sivas overflow-hidden transition-all duration-300" data-target="Sivas Kongresi">
+                    <div class="bg-[#18181b] py-2 px-1 text-center shadow-sm z-10 border-b border-slate-800">
+                        <h3 class="font-bold text-[10px] text-amber-400 uppercase tracking-widest">Sivas</h3>
+                    </div>
+                    <div class="items-container flex-grow p-1.5 flex flex-col gap-1.5 h-[130px] overflow-y-auto hide-scroll bg-gradient-to-b from-[#121212] to-[#0a0a0c]"></div>
+                </div>
+
+                <!-- Amasya Gör. -->
+                <div class="tap-zone drop-target-glow flex flex-col bg-[#121212] rounded-xl border-t-2 border-x border-b border-x-slate-800 border-b-slate-800 cat-amasya-gor overflow-hidden transition-all duration-300" data-target="Amasya Görüşmeleri">
+                    <div class="bg-[#18181b] py-2 px-1 text-center shadow-sm z-10 border-b border-slate-800">
+                        <h3 class="font-bold text-[10px] text-teal-400 uppercase tracking-widest">Amasya Gör.</h3>
+                    </div>
+                    <div class="items-container flex-grow p-1.5 flex flex-col gap-1.5 h-[130px] overflow-y-auto hide-scroll bg-gradient-to-b from-[#121212] to-[#0a0a0c]"></div>
+                </div>
+
+                <!-- Misak-ı Milli -->
+                <div class="tap-zone drop-target-glow flex flex-col bg-[#121212] rounded-xl border-t-2 border-x border-b border-x-slate-800 border-b-slate-800 cat-misak overflow-hidden transition-all duration-300" data-target="Misak-ı Milli">
+                    <div class="bg-[#18181b] py-2 px-1 text-center shadow-sm z-10 border-b border-slate-800">
+                        <h3 class="font-bold text-[10px] text-rose-400 uppercase tracking-widest">Misak-ı Milli</h3>
+                    </div>
+                    <div class="items-container flex-grow p-1.5 flex flex-col gap-1.5 h-[130px] overflow-y-auto hide-scroll bg-gradient-to-b from-[#121212] to-[#0a0a0c]"></div>
+                </div>
+
+                <!-- Yararlı Cem. -->
+                <div class="tap-zone drop-target-glow flex flex-col bg-[#121212] rounded-xl border-t-2 border-x border-b border-x-slate-800 border-b-slate-800 cat-yararli overflow-hidden transition-all duration-300" data-target="Yararlı Cem. ve Basın">
+                    <div class="bg-[#18181b] py-2 px-1 text-center shadow-sm z-10 border-b border-slate-800">
+                        <h3 class="font-bold text-[9px] text-indigo-400 uppercase tracking-widest">Yararlı Basın</h3>
+                    </div>
+                    <div class="items-container flex-grow p-1.5 flex flex-col gap-1.5 h-[130px] overflow-y-auto hide-scroll bg-gradient-to-b from-[#121212] to-[#0a0a0c]"></div>
+                </div>
+
+                <!-- Zararlı Cem. -->
+                <div class="tap-zone drop-target-glow flex flex-col bg-[#121212] rounded-xl border-t-2 border-x border-b border-x-slate-800 border-b-slate-800 cat-zararli overflow-hidden transition-all duration-300" data-target="Zararlı Cem. ve Basın">
+                    <div class="bg-[#18181b] py-2 px-1 text-center shadow-sm z-10 border-b border-slate-800">
+                        <h3 class="font-bold text-[9px] text-red-400 uppercase tracking-widest">Zararlı Basın</h3>
+                    </div>
+                    <div class="items-container flex-grow p-1.5 flex flex-col gap-1.5 h-[130px] overflow-y-auto hide-scroll bg-gradient-to-b from-[#121212] to-[#0a0a0c]"></div>
+                </div>
+
+            </div>
+        </main>
+
+        <!-- Akıllı Seçim Çubuğu (Bottom HUD) -->
+        <div id="mobileSelectionBar" class="absolute bottom-0 left-0 right-0 glass-panel p-3 transform translate-y-full transition-transform duration-300 z-40 rounded-t-2xl flex flex-col gap-2 pointer-events-auto">
+            <div class="flex justify-between items-start w-full gap-2">
+                <div class="flex-grow pl-1">
+                    <span class="inline-block text-[8px] text-indigo-400 font-extrabold uppercase tracking-widest mb-0.5">Seçilen Veri Modülü:</span>
+                    <p id="selectedItemText" class="font-medium text-xs text-slate-200 leading-snug line-clamp-2"></p>
+                </div>
+                <button id="cancelSelectionBtn" class="bg-slate-800 hover:bg-slate-700 active:bg-slate-600 border border-slate-700 text-slate-300 rounded-full p-2 transition-colors flex-shrink-0 touch-manipulation">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+            </div>
+            <div class="text-center bg-indigo-600/20 border border-indigo-500/50 text-indigo-300 text-[10px] font-bold py-1.5 rounded-lg animate-pulse uppercase tracking-widest">
+                Aktarılacak Hedefi Seç
+            </div>
+        </div>
+
+        <!-- Sonuç Ekranı Modalı -->
+        <div id="resultModal" class="absolute inset-0 bg-black/90 backdrop-blur-md z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300 p-4">
+            <div class="bg-[#121212] border border-slate-800 p-6 rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.8)] w-full text-center transform scale-95 transition-transform duration-300 flex flex-col items-center relative overflow-hidden" id="modalContent">
+                
+                <!-- Arka plan süslemesi -->
+                <div class="absolute -top-20 -right-20 w-40 h-40 bg-indigo-600/20 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -bottom-20 -left-20 w-40 h-40 bg-purple-600/20 rounded-full blur-3xl pointer-events-none"></div>
+
+                <div class="w-16 h-16 bg-indigo-900/50 border border-indigo-500/50 rounded-full flex items-center justify-center mb-4 relative z-10">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-indigo-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2v-5l-4-4z" />
+                    </svg>
+                </div>
+                <h2 class="text-xl font-black text-white mb-1 uppercase tracking-wider relative z-10">Görev Tamamlandı</h2>
+                <p class="text-[10px] text-slate-400 font-bold mb-5 uppercase tracking-widest relative z-10">Sistem Analizi Sonucu</p>
+                
+                <div class="flex justify-center items-baseline gap-2 mb-8 relative z-10">
+                    <span class="text-6xl font-black text-indigo-400 leading-none neon-text-indigo" id="scoreCorrect">0</span>
+                    <span class="text-xl font-bold text-slate-600">/</span>
+                    <span class="text-2xl font-bold text-slate-400 leading-none" id="scoreTotal">0</span>
+                </div>
+
+                <button id="closeModalBtn" class="w-full touch-manipulation btn-gradient text-white py-3.5 rounded-xl font-bold text-xs uppercase tracking-widest shadow-lg flex items-center justify-center gap-2 relative z-10">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                    Hataları Görüntüle
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const rawData = [
+            // Havza
+            {"olay": "İzmir işgaline ilk planlı tepki", "kategori": "Havza Genelgesi"},
+            {"olay": "M. Kemal'in ilk sivil (yetki aşımı) belgesi", "kategori": "Havza Genelgesi"},
+            {"olay": "Hristiyanlara kötü davranmayın uyarısı", "kategori": "Havza Genelgesi"},
+            {"olay": "İstanbul'a ilk geri çağrılışı", "kategori": "Havza Genelgesi"},
+            {"olay": "Milli bilinci uyandıran ilk adım", "kategori": "Havza Genelgesi"},
+
+            // Amasya G.
+            {"olay": "Gerekçe, Amaç, Yöntem belirtildi", "kategori": "Amasya Genelgesi"},
+            {"olay": "'Milletin azim ve kararı kurtaracaktır.'", "kategori": "Amasya Genelgesi"},
+            {"olay": "Rejim değişikliği sinyali (İhtilal)", "kategori": "Amasya Genelgesi"},
+            {"olay": "Temsil Heyeti kurma fikri verildi", "kategori": "Amasya Genelgesi"},
+            {"olay": "Cevat Abbas yazdı (Mukaddes İttifak)", "kategori": "Amasya Genelgesi"},
+            {"olay": "İlk kez 'Milli Egemenlik' vurgusu", "kategori": "Amasya Genelgesi"},
+
+            // Erzurum
+            {"olay": "Toplanış bölgesel, kararlar ulusal", "kategori": "Erzurum Kongresi"},
+            {"olay": "İlk kez Misak-ı Milli sınırları", "kategori": "Erzurum Kongresi"},
+            {"olay": "Manda ve himaye İLK KEZ reddedildi", "kategori": "Erzurum Kongresi"},
+            {"olay": "Temsil Heyeti İLK KEZ kuruldu (Doğu)", "kategori": "Erzurum Kongresi"},
+            {"olay": "Askerlikten istifa sonrası 'İlk Sivil' iş", "kategori": "Erzurum Kongresi"},
+            {"olay": "İlk 'Geçici Hükümet' kurma fikri", "kategori": "Erzurum Kongresi"},
+
+            // Sivas
+            {"olay": "Toplanış/karar bakımından tam ulusal", "kategori": "Sivas Kongresi"},
+            {"olay": "Manda/himaye KESİN OLARAK reddedildi", "kategori": "Sivas Kongresi"},
+            {"olay": "Tüm cemiyetler birleştirildi (ARMHC)", "kategori": "Sivas Kongresi"},
+            {"olay": "Temsil Heyeti TÜM ÜLKEYİ temsil etti", "kategori": "Sivas Kongresi"},
+            {"olay": "Ali Fuat Paşa atandı (İlk Yürütme)", "kategori": "Sivas Kongresi"},
+            {"olay": "Damat Ferit istifası (İlk Siyasi Başarı)", "kategori": "Sivas Kongresi"},
+
+            // Amasya Gör.
+            {"olay": "Temsil Heyeti resmen/hukuken tanındı", "kategori": "Amasya Görüşmeleri"},
+            {"olay": "Mebusan Meclisi'nin açılma kararı", "kategori": "Amasya Görüşmeleri"},
+            {"olay": "Meclisin Anadolu'da toplanması reddedildi", "kategori": "Amasya Görüşmeleri"},
+
+            // Misak-ı Milli
+            {"olay": "Kapitülasyonlara ilk kesin tepki", "kategori": "Misak-ı Milli"},
+            {"olay": "Kars, Ardahan, Batum'da Referandum", "kategori": "Misak-ı Milli"},
+            {"olay": "'Felah-ı Vatan Grubu' kuruldu", "kategori": "Misak-ı Milli"},
+            {"olay": "Türk çoğunluğu bazlı Milli Sınırlar", "kategori": "Misak-ı Milli"},
+            {"olay": "İstanbul'un resmen işgaline zemin hazırladı", "kategori": "Misak-ı Milli"},
+
+            // Yararlı
+            {"olay": "Hukuk-u Beşer (Hasan Tahsin)", "kategori": "Yararlı Cem. ve Basın"},
+            {"olay": "İrade-i Milliye (Sivas Kong. yayını)", "kategori": "Yararlı Cem. ve Basın"},
+            {"olay": "Açık Söz (İlk İstiklal Marşı gazetesi)", "kategori": "Yararlı Cem. ve Basın"},
+            {"olay": "Sebilürreşat (İlk İstiklal Marşı dergisi)", "kategori": "Yararlı Cem. ve Basın"},
+            {"olay": "Hakimiyet-i Milliye (Ankara-yarı resmi)", "kategori": "Yararlı Cem. ve Basın"},
+            {"olay": "Kilikyalılar Cemiyeti (Çukurova)", "kategori": "Yararlı Cem. ve Basın"},
+
+            // Zararlı
+            {"olay": "Etniki Eterya & Mavri Mira (Bizans)", "kategori": "Zararlı Cem. ve Basın"},
+            {"olay": "Pontus Rum Cemiyeti (Karadeniz)", "kategori": "Zararlı Cem. ve Basın"},
+            {"olay": "İngiliz Muhipleri (Manda savunucusu)", "kategori": "Zararlı Cem. ve Basın"},
+            {"olay": "Peyam-ı Sabah & Alemdar", "kategori": "Zararlı Cem. ve Basın"},
+            {"olay": "Yeni Dünya (Bolşevik eğilimli)", "kategori": "Zararlı Cem. ve Basın"}
+        ];
+
+        let isGameOver = false;
+        let selectedElement = null;
+
+        const shuffledData = rawData.sort(() => Math.random() - 0.5);
+        const pool = document.getElementById('pool');
+        const poolCountDisplay = document.getElementById('poolCount');
+        const categoriesContainer = document.getElementById('categoriesContainer');
+        const mobileSelectionBar = document.getElementById('mobileSelectionBar');
+        const selectedItemText = document.getElementById('selectedItemText');
+
+        // Kartları Yarat
+        shuffledData.forEach((item, index) => {
+            const el = document.createElement('div');
+            el.className = 'game-item tap-item touch-target pop-in rounded-lg px-2 py-2 text-[10px] font-semibold text-slate-300 shadow-md flex items-center justify-center cursor-pointer select-none';
+            el.textContent = item.olay;
+            el.dataset.id = index;
+            el.dataset.kategori = item.kategori; 
+            
+            // Havuzdaki yerleşimi (Yan yana sığsın diye genişlik ayarı)
+            el.classList.add('w-[48%]', 'h-[44px]'); 
+
+            pool.appendChild(el);
+
+            el.addEventListener('click', (e) => {
+                e.stopPropagation();
+                if (isGameOver) return;
+                
+                if (selectedElement === el) {
+                    clearSelection();
+                } else {
+                    clearSelection(); 
+                    selectedElement = el;
+                    
+                    // Seçim Efekti
+                    el.classList.add('item-selected');
+                    el.classList.remove('text-slate-300', 'bg-card');
+                    el.classList.add('text-indigo-100');
+
+                    // Diğer alanları hedef olarak yak
+                    categoriesContainer.classList.add('selection-mode-active');
+                    
+                    // Alt paneli çıkar
+                    selectedItemText.textContent = item.olay;
+                    mobileSelectionBar.classList.remove('translate-y-full');
+                }
+            });
+        });
+
+        updatePoolCount();
+
+        function clearSelection() {
+            if (selectedElement) {
+                selectedElement.classList.remove('item-selected', 'text-indigo-100');
+                selectedElement.classList.add('text-slate-300');
+                selectedElement = null;
+            }
+            categoriesContainer.classList.remove('selection-mode-active');
+            mobileSelectionBar.classList.add('translate-y-full');
+        }
+
+        document.getElementById('cancelSelectionBtn').addEventListener('click', clearSelection);
+
+        // Kategori Dokunma Alanları
+        const tapZones = document.querySelectorAll('.tap-zone');
+        tapZones.forEach(zone => {
+            zone.addEventListener('click', (e) => {
+                if (isGameOver || !selectedElement) return;
+                appendToZone(zone, selectedElement);
+                clearSelection();
+            });
+        });
+
+        function appendToZone(zone, element) {
+            const targetContainer = zone.id === 'pool' ? zone : zone.querySelector('.items-container');
+            
+            element.classList.remove('pop-in');
+            void element.offsetWidth; // Repaint
+            element.classList.add('pop-in');
+            
+            // Boyut Responsive Ayarı
+            if(zone.id !== 'pool') {
+                element.classList.replace('w-[48%]', 'w-full');
+                element.classList.replace('h-[44px]', 'min-h-[36px]'); 
+                element.classList.replace('text-[10px]', 'text-[9px]');
+                element.classList.replace('p-2', 'p-1.5');
+            } else {
+                element.classList.replace('w-full', 'w-[48%]');
+                element.classList.replace('min-h-[36px]', 'h-[44px]');
+                element.classList.replace('text-[9px]', 'text-[10px]');
+                element.classList.replace('p-1.5', 'p-2');
+            }
+
+            targetContainer.appendChild(element);
+            
+            if (zone.id !== 'pool') {
+                targetContainer.scrollTop = targetContainer.scrollHeight;
+            }
+
+            updatePoolCount();
+        }
+
+        function updatePoolCount() {
+            const count = pool.querySelectorAll('.tap-item').length;
+            poolCountDisplay.textContent = count;
+            
+            if(count === 0) {
+                pool.innerHTML = '<div class="w-full text-center text-slate-600 font-black py-6 text-[10px] uppercase tracking-widest">Veri Kalmadı</div>';
+            }
+        }
+
+        // Doğrula (Submit) İşlemi
+        document.getElementById('submitBtn').addEventListener('click', () => {
+            if (isGameOver) return;
+            
+            const total = rawData.length;
+            let correct = 0;
+
+            const allItems = document.querySelectorAll('.tap-item');
+            
+            allItems.forEach(el => {
+                el.classList.remove('cursor-pointer', 'game-item');
+                el.classList.add('pointer-events-none'); 
+
+                const correctKategori = el.dataset.kategori;
+                const currentContainer = el.closest('.tap-zone');
+                
+                if (currentContainer.id === 'pool') {
+                    // Yerleştirilmeyenler
+                    el.classList.add('opacity-30', 'grayscale');
+                } else {
+                    const zoneTarget = currentContainer.dataset.target;
+                    
+                    if (correctKategori === zoneTarget) {
+                        // Doğru (Neon Yeşil)
+                        correct++;
+                        el.style.background = 'rgba(16, 185, 129, 0.15)';
+                        el.style.borderColor = 'rgba(16, 185, 129, 0.4)';
+                        el.style.color = '#a7f3d0';
+                    } else {
+                        // Yanlış (Neon Kırmızı + Bilgi)
+                        el.style.background = 'rgba(244, 63, 94, 0.15)';
+                        el.style.borderColor = 'rgba(244, 63, 94, 0.4)';
+                        el.style.color = '#fecdd3';
+                        el.classList.add('flex-col', 'gap-1');
+                        
+                        el.innerHTML = `<span>${el.textContent}</span>
+                                        <div class="text-[7px] font-black text-rose-300 bg-rose-950/80 rounded border border-rose-800/50 w-full mt-1 px-1 py-0.5 tracking-wider">Hedef: ${correctKategori}</div>`;
+                    }
+                }
+            });
+
+            isGameOver = true;
+            clearSelection();
+            
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.classList.add('opacity-50', 'pointer-events-none');
+            submitBtn.innerHTML = "TAMAMLANDI";
+            
+            // Skoru ve Modalı Göster
+            document.getElementById('scoreCorrect').textContent = correct;
+            document.getElementById('scoreTotal').textContent = total;
+            
+            const modal = document.getElementById('resultModal');
+            const modalContent = document.getElementById('modalContent');
+            
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modalContent.classList.remove('scale-95');
+            }, 10);
+        });
+
+        // Modalı Kapat
+        document.getElementById('closeModalBtn').addEventListener('click', () => {
+            const modal = document.getElementById('resultModal');
+            const modalContent = document.getElementById('modalContent');
+            
+            modal.classList.add('opacity-0');
+            modalContent.classList.add('scale-95');
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        });
+
+        // Boşluğa tıklama iptali
+        document.addEventListener('click', (e) => {
+            if (selectedElement && !e.target.closest('.tap-item') && !e.target.closest('.tap-zone') && !e.target.closest('#mobileSelectionBar')) {
+                clearSelection();
+            }
+        });
+
+    </script>
+</body>
+</html>
